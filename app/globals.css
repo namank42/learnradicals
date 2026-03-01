@@ -1,26 +1,264 @@
 @import "tailwindcss";
 
+/* Self-hosted Noto Serif SC (subset: only characters used on page) */
+@font-face {
+  font-family: "Noto Serif SC";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/noto-serif-sc-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Serif SC";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/noto-serif-sc-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Serif SC";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/noto-serif-sc-900.woff2") format("woff2");
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #1a1a1a;
+  --paper: #faf8f4;
+  --cream: #f3efe8;
+  --red: #cc3425;
+  --red-soft: #e8d5cf;
+  --red-glow: rgba(204, 52, 37, 0.08);
+  --gold: #b8860b;
+  --gray: #6b6560;
+  --gray-light: #c9c4b8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-cream: var(--cream);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --color-red-glow: var(--red-glow);
+  --color-gold: var(--gold);
+  --color-gray: var(--gray);
+  --color-gray-light: var(--gray-light);
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-heading), system-ui, sans-serif;
+  --font-cjk: "Noto Serif SC", "Songti SC", "SimSun", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+
+/* Hero fade-in — plays on page load */
+@keyframes heroFade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-fade {
+  animation: heroFade 0.7s ease-out both;
+}
+
+/* Scroll reveal — triggered by IntersectionObserver */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Radical card hover */
+.radical-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.radical-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Insight block watermark */
+.insight {
+  position: relative;
+  overflow: hidden;
+}
+
+.insight::before {
+  content: attr(data-watermark);
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%);
+  font-family: "Noto Serif SC", serif;
+  font-size: 240px;
+  line-height: 1;
+  opacity: 0.04;
+  color: white;
+  pointer-events: none;
+}
+
+/* Divider with character */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--gray-light);
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gray-light);
+}
+
+/* CTA button */
+.cta-button {
+  transition: transform 0.2s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+}
+
+.cta-button .cta-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.cta-button:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+
+/* FAQ accordion */
+details summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details .faq-icon {
+  transition: transform 0.2s ease;
+}
+
+details[open] .faq-icon {
+  transform: rotate(45deg);
+}
+
+/* Mobile bottom padding for sticky CTA */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 72px;
+  }
+}
+
+/* ===== AESTHETIC ENHANCEMENTS ===== */
+
+
+/* Section watermarks */
+.section-watermark {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-watermark::before {
+  content: attr(data-char);
+  position: absolute;
+  font-family: "Noto Serif SC", serif;
+  font-size: clamp(180px, 28vw, 360px);
+  opacity: 0.018;
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.section-watermark[data-pos="left"]::before {
+  top: -10%;
+  left: -5%;
+}
+
+.section-watermark[data-pos="right"]::before {
+  top: -10%;
+  right: -5%;
+  left: auto;
+}
+
+.section-watermark > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Brush accent underline */
+.brush-accent {
+  position: relative;
+}
+
+.brush-accent::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: -4px;
+  right: -4px;
+  height: 8px;
+  background: var(--red-soft);
+  border-radius: 40% 60% 50% 40%;
+  z-index: -1;
+  transform: rotate(-0.5deg);
+  opacity: 0.6;
+}
+
+/* Ink wash divider */
+.ink-divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+}
+
+.ink-divider svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ink-divider-char {
+  position: relative;
+  z-index: 1;
+}
+
+/* Defer rendering of below-fold sections */
+.below-fold {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
