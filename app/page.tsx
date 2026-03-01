@@ -1,6 +1,7 @@
 import { ScrollAnimator } from "./components/scroll-animator";
 import { MobileCTA } from "./components/mobile-cta";
 import { InkDivider } from "./components/ink-divider";
+import { CheckoutButton } from "./components/checkout-button";
 
 const SITE_URL = "https://learnradicals.com";
 
@@ -30,7 +31,7 @@ const jsonLd = {
       "@type": "Product",
       name: "Learn Radicals — The 214 Building Blocks of Chinese",
       description:
-        "A beautifully designed PDF guide covering all 214 Kangxi radicals with 1,200+ example characters organized into 16 themed families. Visual decompositions show exactly how characters break down into their radical parts.",
+        "A beautifully designed PDF guide covering all 214 Kangxi radicals with 1,200+ example characters organized into 17 themed families. Visual decompositions show exactly how characters break down into their radical parts.",
       url: SITE_URL,
       brand: {
         "@type": "Brand",
@@ -97,33 +98,65 @@ const heroDemo = [
   { char: "泪", meaning: "tears" },
 ];
 
-const radicalCards = [
+const previewFamily = {
+  num: "01",
+  title: "Water & Ice",
+  desc: "Radicals connected to water, liquids, ice, and flowing.",
+  radicals: [
+    {
+      char: "氵",
+      meaning: "water (side form)",
+      cnName: "sān diǎn shuǐ — three dots of water",
+      examples: [
+        { char: "河", py: "hé", en: "river" },
+        { char: "海", py: "hǎi", en: "sea" },
+        { char: "湖", py: "hú", en: "lake" },
+        { char: "泪", py: "lèi", en: "tears" },
+        { char: "洗", py: "xǐ", en: "to wash" },
+        { char: "酒", py: "jiǔ", en: "alcohol" },
+      ],
+    },
+    {
+      char: "冫",
+      meaning: "ice",
+      cnName: "liǎng diǎn shuǐ — two dots of ice",
+      examples: [
+        { char: "冷", py: "lěng", en: "cold" },
+        { char: "冰", py: "bīng", en: "ice" },
+        { char: "冻", py: "dòng", en: "to freeze" },
+        { char: "凉", py: "liáng", en: "cool" },
+        { char: "净", py: "jìng", en: "clean" },
+        { char: "准", py: "zhǔn", en: "accurate" },
+      ],
+    },
+  ],
+};
+
+const familyToc = [
   {
-    radical: "心",
-    meaning: "heart",
-    builds: [
-      { char: "想", parts: "相 + 心", meaning: "to think" },
-      { char: "忘", parts: "亡 + 心", meaning: "to forget" },
-      { char: "念", parts: "今 + 心", meaning: "to miss" },
-    ],
+    num: "01",
+    title: "Water & Ice",
+    desc: "Characters connected to water, liquids, ice, and flowing.",
   },
   {
-    radical: "氵",
-    meaning: "water",
-    builds: [
-      { char: "河", parts: "氵+ 可", meaning: "river" },
-      { char: "海", parts: "氵+ 每", meaning: "sea" },
-      { char: "泪", parts: "氵+ 目", meaning: "tears" },
-    ],
+    num: "02",
+    title: "Fire & Heat",
+    desc: "Characters connected to fire, cooking, heat, and light.",
   },
   {
-    radical: "火",
-    meaning: "fire",
-    builds: [
-      { char: "炒", parts: "火 + 少", meaning: "to stir-fry" },
-      { char: "烤", parts: "火 + 考", meaning: "to roast" },
-      { char: "灯", parts: "火 + 丁", meaning: "lamp" },
-    ],
+    num: "03",
+    title: "Earth, Stone & Land",
+    desc: "Characters connected to ground, terrain, and minerals.",
+  },
+  {
+    num: "04",
+    title: "Wood & Plants",
+    desc: "Characters connected to trees, bamboo, grass, grain, and flowers.",
+  },
+  {
+    num: "05",
+    title: "Metal & Treasure",
+    desc: "Characters connected to metals, money, and precious things.",
   },
 ];
 
@@ -167,7 +200,7 @@ const features = [
   },
   {
     num: "03",
-    title: "16 themed families",
+    title: "17 themed families",
     desc: "Grouped by meaning \u2014 water, fire, body, nature \u2014 so related radicals connect.",
   },
   {
@@ -198,6 +231,10 @@ const faqItems = [
   {
     q: "Can I print it?",
     a: "Yes! It\u2019s designed to look great both on screen and printed. Many learners keep a printed copy on their desk as a reference.",
+  },
+  {
+    q: "What\u2019s the refund policy?",
+    a: "Because this is a digital product with instant download, all sales are final. If you have any issues accessing your PDF, reach out and we\u2019ll help.",
   },
 ];
 
@@ -265,13 +302,11 @@ export default function Home() {
             className="hero-fade mt-10"
             style={{ animationDelay: "0.4s" }}
           >
-            <a
-              href="#"
+            <CheckoutButton
               className="cta-button inline-block bg-red text-white px-12 py-5 rounded-2xl text-lg md:text-xl font-medium"
-              aria-label="Purchase Learn Radicals PDF for $10"
             >
               Get Learn Radicals &mdash; <span className="font-bold">$10</span> <span className="cta-arrow">&rarr;</span>
-            </a>
+            </CheckoutButton>
             <p className="mt-4 text-sm text-gray">
               Instant PDF download &middot; Keep forever
             </p>
@@ -401,7 +436,7 @@ export default function Home() {
         data-char="文"
         data-pos="left"
       >
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-4xl">
           <h2
             className="font-heading text-2xl md:text-3xl text-center mb-2"
             data-reveal="0"
@@ -412,42 +447,98 @@ export default function Home() {
             className="text-sm text-gray text-center mb-10"
             data-reveal="0.05"
           >
-            3 of 214 radicals from the guide
+            One of 17 themed families from the guide
           </p>
 
-          <div className="grid grid-cols-1 min-[560px]:grid-cols-3 gap-5">
-            {radicalCards.map((card, i) => (
-              <div
-                key={card.radical}
-                className="radical-card bg-white rounded-2xl shadow-lg shadow-black/5 p-6"
-                data-reveal={`${0.1 + i * 0.08}`}
-              >
-                <div className="flex items-baseline gap-3 mb-5">
-                  <span className="font-cjk text-4xl text-red" lang="zh">
-                    {card.radical}
-                  </span>
-                  <span className="text-sm text-gray">{card.meaning}</span>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-                <div className="space-y-2.5">
-                  {card.builds.map((b) => (
-                    <div
-                      key={b.char}
-                      className="flex items-center gap-3 text-sm"
-                    >
-                      <span className="font-cjk text-xl w-7" lang="zh">{b.char}</span>
-                      <span className="text-gray-light">=</span>
-                      <span className="text-gray font-mono text-xs">
-                        {b.parts}
+            {/* Left: Family preview */}
+            <div>
+              {/* Family header */}
+              <div className="mb-5" data-reveal="0.1">
+                <div className="flex items-baseline gap-4 mb-1">
+                  <span className="font-heading text-4xl md:text-5xl text-ink/10 font-bold leading-none">
+                    {previewFamily.num}
+                  </span>
+                  <h3 className="font-heading text-xl md:text-2xl font-medium">
+                    {previewFamily.title}
+                  </h3>
+                </div>
+                <p className="text-sm text-gray ml-[3.25rem] md:ml-[3.75rem]">
+                  {previewFamily.desc}
+                </p>
+              </div>
+
+              {/* Radical entry cards */}
+              <div className="space-y-4">
+                {previewFamily.radicals.map((radical, i) => (
+                  <div
+                    key={radical.char}
+                    className="radical-card bg-white rounded-2xl border-l-4 border-l-red shadow-lg shadow-black/5 p-5"
+                    data-reveal={`${0.15 + i * 0.08}`}
+                  >
+                    <div className="flex items-start gap-4 mb-4">
+                      <span className="font-cjk text-4xl md:text-5xl text-red shrink-0" lang="zh">
+                        {radical.char}
                       </span>
-                      <span className="ml-auto text-gray text-xs">
-                        {b.meaning}
+                      <div className="pt-1">
+                        <p className="font-medium text-sm">{radical.meaning}</p>
+                        <p className="text-xs text-gray mt-0.5">{radical.cnName}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                      {radical.examples.map((ex) => (
+                        <div key={ex.char} className="flex items-center gap-2 text-sm">
+                          <span className="font-cjk text-lg w-6 text-ink" lang="zh">{ex.char}</span>
+                          <span className="text-gray text-xs">{ex.py}</span>
+                          <span className="ml-auto text-gray text-xs">{ex.en}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Family TOC */}
+            <div
+              className="bg-white rounded-2xl border-l-4 border-l-red shadow-lg shadow-black/5 p-6 md:p-8"
+              data-reveal="0.25"
+            >
+              <p className="text-xs font-medium tracking-widest text-red mb-1">
+                CONTENTS
+              </p>
+              <p className="font-heading text-lg md:text-xl font-bold mb-6">
+                17 Radical Families
+              </p>
+
+              <div className="relative">
+                <div className="space-y-5">
+                  {familyToc.map((fam) => (
+                    <div key={fam.num} className="flex gap-4">
+                      <span className="font-heading text-lg text-red font-bold leading-snug pt-0.5 shrink-0">
+                        {fam.num}
                       </span>
+                      <div>
+                        <p className="font-bold text-sm leading-snug">
+                          {fam.title}
+                        </p>
+                        <p className="text-xs text-gray mt-0.5">{fam.desc}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
+
+                {/* Fade overlay */}
+                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
               </div>
-            ))}
+
+              <p className="text-sm text-gray mt-5">
+                + 12 more families in the full guide
+              </p>
+            </div>
+
           </div>
         </div>
       </section>
@@ -509,13 +600,11 @@ export default function Home() {
         </div>
 
         <div className="mx-auto max-w-2xl px-6 text-center mt-10" data-reveal="0.2">
-          <a
-            href="#"
+          <CheckoutButton
             className="inline-block text-red font-medium hover:underline transition-colors"
-            aria-label="Purchase Learn Radicals PDF for $10"
           >
             Get Learn Radicals &mdash; <span className="font-bold">$10</span> <span className="cta-arrow">&rarr;</span>
-          </a>
+          </CheckoutButton>
         </div>
       </section>
 
@@ -603,13 +692,11 @@ export default function Home() {
             flashcard apps.
           </p>
           <div className="mt-8">
-            <a
-              href="#"
+            <CheckoutButton
               className="cta-button inline-block bg-red text-white px-12 py-5 rounded-2xl text-lg md:text-xl font-medium"
-              aria-label="Purchase Learn Radicals PDF"
             >
               Get Learn Radicals <span className="cta-arrow">&rarr;</span>
-            </a>
+            </CheckoutButton>
             <p className="mt-4 text-sm text-gray">
               Secure checkout &middot; Instant PDF download
             </p>

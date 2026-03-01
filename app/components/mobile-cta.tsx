@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CheckoutButton } from "./checkout-button";
 
 export function MobileCTA() {
   const [visible, setVisible] = useState(false);
@@ -19,13 +20,11 @@ export function MobileCTA() {
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
-      <a
-        href="#"
+      <CheckoutButton
         className="block w-full bg-red text-white text-center py-3.5 rounded-2xl font-medium text-sm"
-        aria-label="Purchase Learn Radicals PDF for $10"
       >
         Get Learn Radicals &mdash; $10
-      </a>
+      </CheckoutButton>
     </div>
   );
 }
