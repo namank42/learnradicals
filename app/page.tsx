@@ -427,6 +427,15 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== MID-PAGE CTA ===== */}
+      <div className="below-fold px-6 py-10 text-center" data-reveal="0">
+        <CheckoutButton
+          className="inline-block text-red font-medium hover:underline transition-colors"
+        >
+          Get Learn Radicals &mdash; <span className="font-bold">$10</span> <span className="cta-arrow">&rarr;</span>
+        </CheckoutButton>
+      </div>
+
       {/* Ink Wash Divider */}
       <InkDivider char="字" />
 
