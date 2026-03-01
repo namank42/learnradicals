@@ -271,10 +271,10 @@ export default function Home() {
             className="hero-fade mt-10 inline-block w-full max-w-md"
             style={{ animationDelay: "0.3s" }}
           >
-            <div className="bg-white rounded-2xl border-l-4 border-l-red shadow-lg shadow-black/5 p-6">
-              <div className="flex items-center gap-5">
+            <div className="bg-white rounded-2xl border-l-4 border-l-red shadow-lg shadow-black/5 px-4 py-5 md:p-6">
+              <div className="flex items-center gap-3 md:gap-5">
                 <div className="text-center shrink-0">
-                  <span className="font-cjk text-5xl md:text-6xl text-red" lang="zh">
+                  <span className="font-cjk text-4xl md:text-6xl text-red" lang="zh">
                     氵
                   </span>
                   <p className="text-xs text-gray mt-1">water</p>
@@ -282,10 +282,10 @@ export default function Home() {
                 <span className="text-gray-light text-lg shrink-0">
                   &rarr;
                 </span>
-                <div className="flex gap-3 justify-around flex-1">
+                <div className="flex gap-1.5 min-[375px]:gap-2 md:gap-3 justify-around flex-1 min-w-0">
                   {heroDemo.map((item, i) => (
                     <div key={item.char} className="text-center">
-                      <span className="font-cjk text-2xl md:text-3xl inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-red-soft/50 rounded-full" lang="zh">
+                      <span className="font-cjk text-lg min-[375px]:text-xl md:text-3xl inline-flex items-center justify-center w-9 min-[375px]:w-10 md:w-14 aspect-square bg-red-soft/50 rounded-full" lang="zh">
                         {item.char}
                       </span>
                       <p className="text-[11px] text-gray mt-1.5">
