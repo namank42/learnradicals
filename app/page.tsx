@@ -31,7 +31,7 @@ const jsonLd = {
       "@type": "Product",
       name: "Learn Radicals — The 214 Building Blocks of Chinese",
       description:
-        "A beautifully designed PDF guide covering all 214 Kangxi radicals with 1,200+ example characters organized into 17 themed families. Visual decompositions show exactly how characters break down into their radical parts.",
+        "A beautifully designed PDF guide covering all 214 Kangxi radicals with 1,200+ example characters organized into 31 themed families. Visual decompositions show exactly how characters break down into their radical parts.",
       url: SITE_URL,
       brand: {
         "@type": "Brand",
@@ -200,7 +200,7 @@ const features = [
   },
   {
     num: "03",
-    title: "17 themed families",
+    title: "31 themed families",
     desc: "Grouped by meaning \u2014 water, fire, body, nature \u2014 so related radicals connect.",
   },
   {
@@ -456,7 +456,7 @@ export default function Home() {
             className="text-sm text-gray text-center mb-10"
             data-reveal="0.05"
           >
-            One of 17 themed families from the guide
+            One of 31 themed families from the guide
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -519,7 +519,7 @@ export default function Home() {
                 CONTENTS
               </p>
               <p className="font-heading text-lg md:text-xl font-bold mb-6">
-                17 Radical Families
+                31 Radical Families
               </p>
 
               <div className="relative">
@@ -544,7 +544,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-gray mt-5">
-                + 12 more families in the full guide
+                + 26 more families in the full guide
               </p>
             </div>
 
