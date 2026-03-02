@@ -53,7 +53,7 @@ const jsonLd = {
           name: "Is this simplified or traditional Chinese?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "The guide covers simplified Chinese radicals — the standard writing system used in mainland China and the most commonly taught worldwide. Many radicals are identical in both systems.",
+            text: "The guide covers both. Most of the 214 Kangxi radicals are identical in simplified and traditional Chinese. Where they differ, the guide shows both versions explicitly — so it works whether you're learning simplified (mainland China) or traditional (Taiwan, Hong Kong, Macau).",
           },
         },
         {
@@ -218,7 +218,7 @@ const features = [
 const faqItems = [
   {
     q: "Is this simplified or traditional Chinese?",
-    a: "The guide covers simplified Chinese radicals \u2014 the standard writing system used in mainland China and the most commonly taught worldwide. Many radicals are identical in both systems.",
+    a: "The guide covers both. Most of the 214 Kangxi radicals are identical in simplified and traditional Chinese. Where they differ, the guide shows both versions explicitly \u2014 so it works whether you\u2019re learning simplified (mainland China) or traditional (Taiwan, Hong Kong, Macau).",
   },
   {
     q: "Do I need to know any Chinese already?",
