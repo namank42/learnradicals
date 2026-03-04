@@ -742,6 +742,12 @@ export default function Home() {
               </details>
             ))}
           </div>
+          <p className="mt-6 text-center text-sm text-gray">
+            Have another question?{" "}
+            <a href="/contact" className="underline hover:text-ink transition-colors">
+              Contact us
+            </a>
+          </p>
         </div>
       </section>
 
@@ -758,6 +764,11 @@ export default function Home() {
             className="hover:text-ink transition-colors"
           >
             Follow @lunalang42 on Threads for daily Chinese breakdowns
+          </a>
+        </p>
+        <p className="mt-2">
+          <a href="/contact" className="hover:text-ink transition-colors">
+            Contact Support
           </a>
         </p>
       </footer>
