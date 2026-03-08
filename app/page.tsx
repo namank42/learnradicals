@@ -305,7 +305,7 @@ export default function Home() {
             <CheckoutButton
               className="cta-button inline-block bg-red text-white px-12 py-5 rounded-2xl text-lg md:text-xl font-medium"
             >
-              Get Learn Radicals &mdash; <span className="font-bold">$27</span> <span className="cta-arrow">&rarr;</span>
+              Get Learn Radicals &mdash; <span className="line-through text-white/60">$49</span> <span className="font-bold">$27</span> <span className="cta-arrow">&rarr;</span>
             </CheckoutButton>
             <p className="mt-4 text-sm text-gray">
               Instant PDF download &middot; Keep forever
@@ -432,7 +432,7 @@ export default function Home() {
         <CheckoutButton
           className="inline-block text-red font-medium hover:underline transition-colors"
         >
-          Get Learn Radicals &mdash; <span className="font-bold">$27</span> <span className="cta-arrow">&rarr;</span>
+          Get Learn Radicals &mdash; <span className="line-through text-gray">$49</span> <span className="font-bold">$27</span> <span className="cta-arrow">&rarr;</span>
         </CheckoutButton>
       </div>
 
@@ -612,7 +612,7 @@ export default function Home() {
           <CheckoutButton
             className="inline-block text-red font-medium hover:underline transition-colors"
           >
-            Get Learn Radicals &mdash; <span className="font-bold">$27</span> <span className="cta-arrow">&rarr;</span>
+            Get Learn Radicals &mdash; <span className="line-through text-gray">$49</span> <span className="font-bold">$27</span> <span className="cta-arrow">&rarr;</span>
           </CheckoutButton>
         </div>
       </section>
@@ -692,7 +692,7 @@ export default function Home() {
             Stop memorizing.{" "}
             <span className="text-red brush-accent">Start understanding.</span>
           </h2>
-          <p className="mt-8 font-heading text-5xl md:text-6xl text-ink">$27</p>
+          <p className="mt-8 font-heading text-5xl md:text-6xl text-ink"><span className="line-through text-gray text-3xl md:text-4xl">$49</span>{" "}$27</p>
           <p className="mt-2 text-sm text-gray">
             One-time purchase &middot; Yours forever
           </p>
