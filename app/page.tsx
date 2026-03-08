@@ -39,7 +39,7 @@ const jsonLd = {
       },
       offers: {
         "@type": "Offer",
-        price: "10.00",
+        price: "27.00",
         priceCurrency: "USD",
         availability: "https://schema.org/InStock",
         url: SITE_URL,
@@ -251,11 +251,11 @@ export default function Home() {
       <section className="px-6 pt-20 pb-12 md:pt-32 md:pb-20">
         <div className="mx-auto max-w-2xl text-center">
           <h1
-            className="font-heading font-bold text-[2.5rem] md:text-6xl lg:text-7xl leading-[1.05] tracking-tight"
+            className="font-heading font-bold text-[clamp(2rem,7vw,2.5rem)] md:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-tight"
           >
-            The Visual Guide to
+            Understand How Chinese
             <br />
-            <span className="text-red">Reading Chinese</span>
+            Characters <span className="text-red">Actually Work</span>
           </h1>
 
           <p
@@ -450,7 +450,7 @@ export default function Home() {
             className="font-heading text-2xl md:text-3xl text-center mb-2"
             data-reveal="0"
           >
-            A preview of what&apos;s <span className="brush-accent">inside</span>
+            See how the system <span className="brush-accent">works</span>
           </h2>
           <p
             className="text-sm text-gray text-center mb-10"
@@ -632,7 +632,7 @@ export default function Home() {
             className="font-heading text-2xl md:text-3xl text-center mb-10"
             data-reveal="0"
           >
-            What&apos;s inside the guide
+            Everything you get
           </h2>
           <div
             className="bg-white rounded-2xl shadow-lg shadow-black/5 p-8 md:p-10"
@@ -697,8 +697,7 @@ export default function Home() {
             One-time purchase &middot; Yours forever
           </p>
           <p className="mt-4 text-xs text-gray max-w-xs mx-auto">
-            Less than a single Chinese lesson. More useful than a year of
-            flashcard apps.
+            Less than one Chinese lesson. Useful for a lifetime.
           </p>
           <div className="mt-8">
             <CheckoutButton
