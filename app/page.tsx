@@ -251,11 +251,10 @@ export default function Home() {
       <section className="px-6 pt-20 pb-12 md:pt-32 md:pb-20">
         <div className="mx-auto max-w-2xl text-center">
           <h1
-            className="font-heading font-bold text-[clamp(2rem,7vw,2.5rem)] md:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-tight"
+            className="font-heading font-bold text-[clamp(2rem,8vw,2.75rem)] md:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-tight"
           >
-            Understand How Chinese
-            <br />
-            Characters <span className="text-red">Actually Work</span>
+            Understand How Chinese Characters{" "}
+            <span className="text-red">Actually Work</span>
           </h1>
 
           <p
@@ -303,7 +302,7 @@ export default function Home() {
             style={{ animationDelay: "0.4s" }}
           >
             <CheckoutButton
-              className="cta-button inline-block bg-red text-white px-12 py-5 rounded-2xl text-lg md:text-xl font-medium"
+              className="cta-button inline-block bg-red text-white px-8 md:px-12 py-5 rounded-2xl text-base md:text-xl font-medium whitespace-nowrap"
             >
               Get Learn Radicals &mdash; <span className="line-through text-white/60">$49</span> <span className="font-bold">$27</span> <span className="cta-arrow">&rarr;</span>
             </CheckoutButton>
@@ -701,7 +700,7 @@ export default function Home() {
           </p>
           <div className="mt-8">
             <CheckoutButton
-              className="cta-button inline-block bg-red text-white px-12 py-5 rounded-2xl text-lg md:text-xl font-medium"
+              className="cta-button inline-block bg-red text-white px-8 md:px-12 py-5 rounded-2xl text-base md:text-xl font-medium whitespace-nowrap"
             >
               Get Learn Radicals <span className="cta-arrow">&rarr;</span>
             </CheckoutButton>
