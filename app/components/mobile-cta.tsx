@@ -23,7 +23,7 @@ export function MobileCTA() {
       <CheckoutButton
         className="block w-full bg-red text-white text-center py-3.5 rounded-2xl font-medium text-sm"
       >
-        Get Learn Radicals &mdash; $10
+        Get Learn Radicals &mdash; $27
       </CheckoutButton>
     </div>
   );
