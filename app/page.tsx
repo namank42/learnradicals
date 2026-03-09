@@ -251,7 +251,7 @@ export default function Home() {
       <section className="px-6 pt-20 pb-12 md:pt-32 md:pb-20">
         <div className="mx-auto max-w-2xl text-center">
           <h1
-            className="font-heading font-bold text-[clamp(2rem,8vw,2.75rem)] md:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-tight"
+            className="font-heading font-bold text-[clamp(2rem,8vw,2.75rem)] md:text-5xl lg:text-[3.5rem] leading-[1.05] tracking-tight -mx-2 md:mx-0"
           >
             Understand How Chinese Characters{" "}
             <span className="text-red">Actually Work</span>
