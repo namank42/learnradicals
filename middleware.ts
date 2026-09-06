@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   ATTR_COOKIE,
   ATTR_MAX_AGE,
+  isShortLinkPath,
   isSocialReferrer,
   mergeAttribution,
   parseAttribution,
@@ -18,7 +19,19 @@ function isPagePath(pathname: string): boolean {
 }
 
 export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+  const shortLink = isShortLinkPath(request.nextUrl.pathname);
+  const rewriteUrl = request.nextUrl.clone();
+  if (shortLink) {
+    rewriteUrl.pathname = "/";
+  }
+
+  const response = shortLink
+    ? NextResponse.rewrite(rewriteUrl)
+    : NextResponse.next();
+
+  if (shortLink) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
 
   if (request.method !== "GET" || !isPagePath(request.nextUrl.pathname)) {
     return response;

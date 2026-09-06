@@ -20,11 +20,23 @@ export type Attribution = {
 
 const UTM_KEYS = ["source", "medium", "campaign", "content", "term"] as const;
 
+export function isShortLinkPath(pathname: string): boolean {
+  return pathname === "/t" || pathname === "/t/" || pathname.startsWith("/t/");
+}
+
 export function touchFromRequest(url: URL, referrer: string): Touch | null {
   const params = url.searchParams;
-  const source = params.get("utm_source") || params.get("src") || "";
-  const medium = params.get("utm_medium") || "";
-  const campaign = params.get("utm_campaign") || "";
+  const short = isShortLinkPath(url.pathname);
+  const slug = short
+    ? url.pathname.replace(/^\/t\/?/, "").replace(/\/$/, "")
+    : "";
+
+  const source =
+    params.get("utm_source") || params.get("src") || (short ? "threads" : "");
+  const medium =
+    params.get("utm_medium") ||
+    (short ? (slug ? "post" : "profile") : "");
+  const campaign = params.get("utm_campaign") || slug;
   const content = params.get("utm_content") || "";
   const term = params.get("utm_term") || "";
   const ref = referrer.slice(0, 200);
