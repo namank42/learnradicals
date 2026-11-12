@@ -12,6 +12,14 @@ import "../../character.css";
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ a?: string }> };
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+const ELEMENT_WITH: Record<string, string> = {
+  wood: "with roots that keep reaching for the light",
+  fire: "with a spark that sets a whole room moving",
+  earth: "with a calm that people can stand on",
+  metal: "with an edge that sharpens with every challenge",
+  water: "with a way of flowing around anything",
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const view = getResult((await params).id);
@@ -48,22 +56,11 @@ export default async function ResultPage({ params, searchParams }: Props) {
 
         <p className="anim-rise mt-4 font-heading text-[1.35rem] font-bold leading-snug" style={{ animationDelay: "0.4s" }}>&ldquo;{c.decode}&rdquo;</p>
 
-        <div
-          className="anim-rise mt-5 w-full rounded-2xl border border-gray-light/60 bg-white px-5 py-4 shadow-sm shadow-black/5"
-          style={{ animationDelay: "0.55s" }}
-        >
-          <p className="text-sm text-gold">
-            {cap(element.element)} {cap(animal.animal)}{" "}
-            <span className="quiz-char" lang="zh">{element.zh}{animal.zh}</span>
-            <span className="text-gray"> · by birth year</span>
-          </p>
-          <p className="mt-2 text-[15px] leading-snug text-ink">
-            <span className="quiz-char text-red" lang="zh">{animal.zh}</span> {animal.badge}
-          </p>
-          <p className="mt-1 text-[15px] leading-snug text-gray">
-            <span className="quiz-char text-red" lang="zh">{element.zh}</span> {element.badge}
-          </p>
-        </div>
+        <p className="anim-rise mt-4 w-full text-[16px] leading-relaxed text-ink" style={{ animationDelay: "0.55s" }}>
+          As a <span className="text-gold">{cap(element.element)} {cap(animal.animal)}</span>{" "}
+          <span className="quiz-char text-gold" lang="zh">{element.zh}{animal.zh}</span>, you&rsquo;re{" "}
+          {lower(animal.badge).replace(/\.$/, "")}, {ELEMENT_WITH[element.element]}.
+        </p>
 
         <UnlockSheet
           id={id}
@@ -73,9 +70,13 @@ export default async function ResultPage({ params, searchParams }: Props) {
           className="anim-rise cta-button mt-6 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white"
           style={{ animationDelay: "0.7s" }}
         />
+        <p className="mt-2 text-balance text-xs leading-relaxed text-gray">
+          Includes a detailed analysis of what {c.char} says about your personality, relationships and money, plus 3
+          wallpapers.
+        </p>
         <Link
           href={`/character/reading/example?from=${id}`}
-          className="mt-3 text-xs font-medium text-ink underline underline-offset-2"
+          className="mt-1 text-xs font-medium text-ink underline underline-offset-2"
         >
           See an example reading &rarr;
         </Link>
