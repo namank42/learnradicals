@@ -1,0 +1,404 @@
+# "What's Your Chinese Character?" Quiz Funnel — Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Apply risk-based implementer continuity and review checkpoints; task numbering alone does not require a fresh worker or reviewer. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Ship `learnradicals.com/character`: a birth-date + 4-tap quiz that gives a free, shareable "soul character + zodiac animal + element" result and sells a $7 / $4 full reading, with a Year of the Goat 2027 kit pre-order (digital download, ~$12) as an optional checkout item.
+
+**Architecture:** Pure, tested domain logic in `lib/character/` (zodiac, scoring, ids, content). Next.js App Router pages render it; `next/og` routes render share cards and wallpapers with a subset CJK font. Stripe Checkout is the purchase record (result id in metadata), the existing webhook branches by product, and Resend Contacts holds quiz emails. No database.
+
+**Tech Stack:** Next.js 16.1.6 (App Router, React 19), TypeScript, Tailwind v4, stripe 20.4.0 (API 2026-02-25.clover), resend 6.9.3, @vercel/analytics 1.6.1, Vitest (new, dev only), Python fontTools (subsetting, already installed: 4.59.0 with brotli).
+
+**Spec:** `docs/superpowers/specs/2026-11-12-character-quiz-design.md`
+**Docs digest:** `docs/superpowers/research/2026-11-12-character-quiz-docs.md`
+
+## Global Constraints
+
+- **Digital products only.** No physical goods, print-on-demand or shipping.
+- Package manager: **pnpm** (never npm).
+- No database and no new hosted services: Stripe holds purchases, Resend holds emails, Vercel hosts.
+- Entry URL is `/character` directly; no `/t/` short link.
+- Prices: `READING_STD` = $7 USD, `READING_SEA` = $4 USD (countries ID, VN, MY, PH, TH), `GOAT_PREORDER` ≈ $12 USD (digital kit pre-order). Never use `currency_options` (it disables Adaptive Pricing for those currencies).
+- All reading copy is pre-written in `lib/character/content/`; nothing is generated at purchase time. Readings are labeled as poetic readings ("the way Luna reads it"), never etymology or history.
+- No PII in Stripe metadata or logs (result ids and attribution only).
+- `next/og` fonts must be TTF/OTF/WOFF (not WOFF2). The existing `public/fonts/*.woff2` files are landing-page subsets and must not be used for quiz glyphs.
+- The existing `/`, `/success`, `/api/checkout`, `/api/download` flows and the PDF email must keep working unchanged.
+- Don't commit to `main` without the user's go-ahead. Do the work on branch `feat/character-quiz`.
+
+## File Structure
+
+```
+lib/character/
+  zodiac.ts            birth date → { animal, element, lunarYear } via Intl chinese calendar
+  types.ts             Animal, Element, CharacterEntry, QuizQuestion, ResultId types
+  ids.ts               encode/decode/validate result ids
+  scoring.ts           answers + birth date → character slug
+  pricing.ts           country → price env key
+  content/
+    characters.ts      24 CharacterEntry records
+    animals.ts         12 animal profiles + Goat-year teasers
+    elements.ts        5 element profiles
+    questions.ts       4 QuizQuestion records with weights
+  index.ts             getResult(id) → assembled view model (free + paid parts)
+tests/character/
+  zodiac.test.ts  ids.test.ts  scoring.test.ts  content.test.ts  pricing.test.ts
+scripts/subset-fonts.py               builds assets/fonts/quiz-serif.ttf + public/fonts/quiz-serif.woff2
+assets/fonts/quiz-serif.ttf           (generated, committed)
+public/fonts/quiz-serif.woff2         (generated, committed)
+app/character/
+  page.tsx                            quiz shell (server) + metadata
+  quiz.tsx                            client quiz state machine
+  r/[id]/page.tsx                     free result page
+  r/[id]/opengraph-image.tsx          1200×630 per-result preview
+  r/[id]/unlock-button.tsx            client: POST checkout → redirect
+  r/[id]/email-form.tsx               client: POST email capture
+  reading/page.tsx                    paid reading (verifies Stripe session)
+  character.css                       @font-face for quiz-serif (scoped import)
+app/api/character/
+  card/[id]/route.tsx                 1080×1920 Story card (free)
+  wallpaper/route.tsx                 paid wallpapers (?session_id=&v=1|2|3)
+  checkout/route.ts                   regional price + optional pre-order
+  email/route.ts                      Resend contact + free card email
+lib/character/og.tsx                  shared font loader + card/wallpaper JSX
+lib/email/reading-email.ts            reading + free-card email HTML builders
+app/api/webhook/route.ts              MODIFY: branch on metadata.product
+next.config.ts                        MODIFY: outputFileTracingIncludes for assets/fonts
+package.json                          MODIFY: vitest dev dep + "test" script
+vitest.config.ts                      NEW
+```
+
+---
+
+### Task 1: Test runner + zodiac calculation
+
+**Outcome:** `getZodiac(date)` returns the correct animal, element and lunar year, including on Lunar New Year boundaries, and `pnpm test` runs.
+
+**Risk and evidence:** Deterministic logic with a known boundary trap (Jan/Feb births). Strict RED/GREEN with boundary tests. Checkpoint: self-review.
+
+**Files:**
+- Create: `vitest.config.ts`, `lib/character/types.ts`, `lib/character/zodiac.ts`, `tests/character/zodiac.test.ts`
+- Modify: `package.json` (devDependency `vitest`, script `"test": "vitest run"`)
+
+**Interfaces (produces):**
+```ts
+// lib/character/types.ts
+export const ANIMALS = ["rat","ox","tiger","rabbit","dragon","snake","horse","goat","monkey","rooster","dog","pig"] as const;
+export type Animal = typeof ANIMALS[number];
+export const ELEMENTS = ["wood","fire","earth","metal","water"] as const;
+export type Element = typeof ELEMENTS[number];
+
+// lib/character/zodiac.ts
+export const MIN_BIRTH_YEAR = 1925;
+export const MAX_BIRTH_YEAR = 2015;
+export type Zodiac = { animal: Animal; element: Element; lunarYear: number };
+/** date is a calendar date (y, m 1-12, d). Throws RangeError outside MIN..MAX or on an invalid date. */
+export function getZodiac(y: number, m: number, d: number): Zodiac;
+```
+
+**Algorithm (not a lookup table):** use the ICU Chinese calendar.
+```ts
+const fmt = new Intl.DateTimeFormat("en-u-ca-chinese", { year: "numeric", timeZone: "UTC" });
+const lunarYear = Number(fmt.formatToParts(new Date(Date.UTC(y, m - 1, d, 12))).find(p => p.type === "relatedYear")!.value);
+const animal = ANIMALS[((lunarYear - 4) % 12 + 12) % 12];
+const element = ELEMENTS[Math.floor((((lunarYear - 4) % 10 + 10) % 10) / 2)];
+```
+This replaces the spec's "1940–2015 table": it was verified in Node to give 1987-01-28 → 1986 and 1987-01-29 → 1987, and 2026-02-16 → 2025 and 2026-02-17 → 2026, for any year.
+
+- [ ] **Step 1: Install and configure.** `pnpm add -D vitest`. `vitest.config.ts` uses `environment: "node"` and `resolve.alias { "@": path.resolve(__dirname) }`.
+- [ ] **Step 2: Write the failing tests** in `tests/character/zodiac.test.ts`:
+  - 1987-01-28 → `{ animal: "tiger", element: "fire", lunarYear: 1986 }`
+  - 1987-01-29 → `{ animal: "rabbit", element: "fire", lunarYear: 1987 }`
+  - 2000-02-04 → rabbit, earth (1999); 2000-02-05 → dragon, metal (2000)
+  - 1990-06-15 → horse, metal
+  - 2015-12-31 → goat, wood
+  - 1924-12-31 and 2016-01-01 throw `RangeError`; 2001-02-30 throws `RangeError`
+- [ ] **Step 3: RED.** `pnpm test tests/character/zodiac.test.ts` fails (module missing).
+- [ ] **Step 4: Implement** `types.ts` and `zodiac.ts` as above, with an invalid-date check: rebuild the date and compare y/m/d.
+- [ ] **Step 5: GREEN.** `pnpm test` passes. Also run `pnpm lint` and `pnpm build`; both succeed.
+- [ ] **Step 6: Commit** on `feat/character-quiz`: `feat(character): zodiac calculation via Intl chinese calendar`.
+
+---
+
+### Task 2: Content library + validator
+
+**Outcome:** 24 soul characters, 12 animals (with Goat-year teasers), 5 elements and 4 quiz questions exist as typed data, and a validator test enforces their completeness and length rules.
+
+**Risk and evidence:** Content quality is the product. The automated content test checks shape, lengths, unique slugs, weight coverage and pinyin presence. Human review by a fluent speaker is a **launch gate**, recorded in Task 8. Checkpoint: user reviews the 24-character list before the full copy is written.
+
+**Files:**
+- Create: `lib/character/content/{characters,animals,elements,questions}.ts`, `tests/character/content.test.ts`
+- Modify: `lib/character/types.ts` (add the content types)
+
+**Interfaces (produces):**
+```ts
+export type CharacterEntry = {
+  slug: string;            // ascii pinyin, no tones, unique; e.g. "hui", "peng"
+  char: string;            // single simplified character, e.g. "慧"
+  traditional?: string;    // only if different, e.g. "愛"
+  pinyin: string;          // with tone marks, e.g. "huì"
+  meaning: string;         // 1–4 words, e.g. "wisdom"
+  parts: { char: string; gloss: string }[];   // 2–3 parts, glosses as in the posts
+  decode: string;          // free one-liner, ≤ 90 chars, Luna voice
+  about: string;           // paid, 150–250 words, second person
+  words: { hanzi: string; pinyin: string; en: string }[];  // exactly 3, each containing char
+  hardDays: string;        // paid, ≤ 140 chars
+  pairsWith: string;       // slug of another entry
+};
+export type AnimalProfile = { animal: Animal; zh: string; badge: string /* ≤ 60 chars */; profile: string /* 80–120 words */; goatYear: string /* 60–100 words, ends with a pre-order line */ };
+export type ElementProfile = { element: Element; zh: string; badge: string; profile: string /* 40–80 words */ };
+export type QuizQuestion = { id: string; prompt: string; answers: { label: string; weights: Record<string, number> }[] /* exactly 4 */ };
+```
+
+- [ ] **Step 1: Pick the 24 characters.** Rank single-character decode posts by `(reposts + shares + quotes) / views` and by raw reposts:
+  - Older posts: `/Users/naman/Desktop/lunalang/content/threads/research/2026-09-14/all-posts.json` (`.posts[]`).
+  - Recent posts: the latest Threads posts via the Threads MCP (`threads_list_posts`, `sort_by: timestamp`, `limit: 10`, paging), or `scratchpad/audience/recent_posts.json` if the reply-analysis run saved it.
+  - Include 朋, 慧, 愈, 忙, 安, 信 unless the data rules them out.
+  - Spread across moods (love/friendship, rest, struggle, wisdom, joy) so the quiz can tell people apart.
+  - Exclude characters whose decode drew gender or tradition fights (e.g. 安's "woman under a roof"): **drop 安**.
+  - Write the list with view and repost counts into the PR description and **stop for the user to approve it**.
+- [ ] **Step 2: Write the validator test first.** For every character entry:
+  - Slugs are unique and `pairsWith` resolves.
+  - `char` is exactly 1 code point; `parts` has 2–3 items.
+  - `decode` is ≤ 90 chars; `about` word count is 150–250; `hardDays` is ≤ 140 chars.
+  - `words.length === 3` and every `hanzi` includes `char`; every pinyin is non-empty.
+
+  Other content:
+  - All 12 animals and all 5 elements are present, and their word counts are in range.
+  - Exactly 4 questions with exactly 4 answers each. Every weight key is a valid slug. Every character slug appears in at least 2 answers' weights.
+  - No string contains "etymology", "originally meant" or "historically".
+
+  RED: `pnpm test tests/character/content.test.ts` fails.
+- [ ] **Step 3: Write the copy** in Luna's voice: short sentences, warm, concrete images. Reuse the exact post wording for `decode` where a post exists. `about` is second person ("You're the friend who…"). `words` are common, HSK 1–4 level where possible. `goatYear` ends with: "Your full 2027 Goat-year kit is coming — pre-order it below." Questions are about everyday feelings, never about religion, politics or relationship status.
+- [ ] **Step 4: GREEN.** The content test passes. `pnpm test` is fully green.
+- [ ] **Step 5: Commit.** `feat(character): content library and validator`.
+
+---
+
+### Task 3: Scoring, result ids, pricing rule
+
+**Outcome:** The same answers always map to one character. Every character is reachable. Result ids round-trip. Country maps to the right price key.
+
+**Risk and evidence:** Deterministic logic that affects every result. Strict RED/GREEN. Checkpoint: self-review.
+
+**Files:**
+- Create: `lib/character/{scoring,ids,pricing,index}.ts`, `tests/character/{scoring,ids,pricing}.test.ts`
+
+**Interfaces (produces):**
+```ts
+// ids.ts
+export type ResultId = string; // `${slug}-${animal}-${element}`, e.g. "hui-rabbit-water"
+export function encodeResultId(slug: string, animal: Animal, element: Element): ResultId;
+export function decodeResultId(id: string): { slug: string; animal: Animal; element: Element } | null; // null if any part unknown
+
+// scoring.ts
+/** answers: answer index (0–3) per question, in QUESTIONS order. Throws on wrong length or out-of-range index. */
+export function scoreCharacter(answers: number[], birth: { y: number; m: number; d: number }): string; // slug
+// Sum the weights; take the max. On a tie, sort tied slugs alphabetically and pick tied[(y*372 + m*31 + d) % tied.length].
+
+// pricing.ts
+export const SEA_COUNTRIES = ["ID","VN","MY","PH","TH"] as const;
+export function readingPriceKey(country: string | null): "STRIPE_PRICE_READING_SEA" | "STRIPE_PRICE_READING_STD";
+
+// index.ts
+export type ResultView = { id: ResultId; character: CharacterEntry; animal: AnimalProfile; element: ElementProfile; pair: CharacterEntry };
+export function getResult(id: string): ResultView | null;
+```
+
+- [ ] **Step 1: Write the failing tests.**
+  - ids: round-trip for every (slug, animal, element). Rejects `""`, `"x-rabbit-water"`, `"hui-cat-water"`, `"hui-rabbit-air"` and extra segments.
+  - scoring: the same input gives the same output. Wrong answer count or index 4 throws.
+  - Coverage: enumerating all 4^4 = 256 answer combos × 3 sample birth dates hits **all 24 slugs**, and no slug exceeds 12% of outcomes. If this fails, tune weights in `questions.ts`, not the algorithm.
+  - pricing: "ID" → SEA, "us" → STD (case-insensitive), `null` → STD, "SG" → STD.
+- [ ] **Step 2: RED** (modules missing).
+- [ ] **Step 3: Implement.**
+- [ ] **Step 4: GREEN.** `pnpm test` is fully green.
+- [ ] **Step 5: Commit.** `feat(character): scoring, result ids, regional price rule`.
+
+---
+
+### Task 4: Quiz and free result pages (first runnable slice)
+
+**Outcome:** On a phone-sized screen, a visitor goes from hook → birth date → 4 taps → `/character/r/[id]`, which shows the character, pinyin, meaning, decode, animal + element badge and a disabled-looking unlock button placeholder (wired in Task 6).
+
+**Risk and evidence:** UI composition. Manual QA in the browser at 375px and desktop, light and dark. Durable automated evidence comes from Tasks 1–3. Checkpoint: **user looks at it running** before Task 5.
+
+**Files:**
+- Create: `app/character/page.tsx`, `app/character/quiz.tsx`, `app/character/r/[id]/page.tsx`, `app/character/character.css`, `scripts/subset-fonts.py`, `assets/fonts/quiz-serif.ttf`, `public/fonts/quiz-serif.woff2`
+- Modify: `next.config.ts` (`outputFileTracingIncludes`: add `"/character/**": ["./assets/fonts/**/*"]` and `"/api/character/**": ["./assets/fonts/**/*"]`)
+
+**Font subset (needed here so the web pages render the glyphs):**
+- Source font: Noto Serif SC (OFL), static TTF or OTF.
+- **Downloading it needs the user's OK first** (name the file, the source — the notofonts/noto-cjk GitHub release or Google Fonts — and its size).
+- Keep the source outside the repo, e.g. `~/fonts/`.
+- `scripts/subset-fonts.py <source.ttf>`:
+  1. Imports the character list by reading every CJK code point from `lib/character/content/*.ts` (regex `[㐀-鿿豈-﫿]`), plus ASCII, pinyin tone vowels (āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü) and `·—–’“”`.
+  2. Writes `assets/fonts/quiz-serif.ttf` and `public/fonts/quiz-serif.woff2` (flavor woff2) using `fontTools.subset`.
+  3. Prints the glyph count.
+- Run it with `python3 -I scripts/subset-fonts.py ~/fonts/NotoSerifSC-Bold.otf`.
+
+**Page behavior:**
+- `page.tsx` (server): metadata title "What's Your Chinese Character? — Luna"; OG image is the site default. Renders `<Quiz />`.
+- `quiz.tsx` (client), steps `hook → birth → q1..q4 → navigating`:
+  - Birth: three `<select>`s (month, day, year limited to `MIN_BIRTH_YEAR..MAX_BIRTH_YEAR`). No free typing; invalid dates are blocked.
+  - Each answer is a full-width tap button, and the next question appears instantly.
+  - On the last tap, compute `getZodiac` + `scoreCharacter` client-side and `router.push('/character/r/' + encodeResultId(...))`.
+  - Fire `track('quiz_start')` on Start and `track('quiz_complete', { id })` at the end (`import { track } from '@vercel/analytics'`).
+- `r/[id]/page.tsx` (server):
+  - Calls `getResult(params.id)`; if null, `redirect('/character')`.
+  - Renders the character large (`font-family: "Quiz Serif"`), pinyin, meaning, the decode in italics, "{Element} {Animal}" badge with zh, a "Take the quiz" link for visitors who arrived from a share, and an `UnlockButton` placeholder.
+  - Uses the existing theme tokens (paper, ink, red, gold). `export const dynamicParams = true`.
+- `character.css`: `@font-face { font-family: "Quiz Serif"; src: url("/fonts/quiz-serif.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }`, imported by both pages.
+
+- [ ] **Step 1:** Ask the user before downloading the font, then build the subset. Verify `python3 -I -c "from fontTools.ttLib import TTFont; f=TTFont('assets/fonts/quiz-serif.ttf'); print(len(f.getGlyphOrder()))"` shows a few hundred glyphs and the file is under 1 MB.
+- [ ] **Step 2:** Add a test to `tests/character/content.test.ts` that parses `assets/fonts/quiz-serif.ttf` with `fontkit` or a cmap read via `opentype.js`. **Use whichever is already installed; otherwise do the check in Python** in `scripts/subset-fonts.py --check`, exiting non-zero on any missing glyph, and run it in the Step 5 batch.
+- [ ] **Step 3:** Implement the pages and css.
+- [ ] **Step 4: Manual QA.** `pnpm dev`, open `/character` at 375×812:
+  - Complete the quiz with a 1987-01-28 birth date → result says Fire Tiger.
+  - Reload the result URL → same page. `/character/r/bogus` redirects to `/character`.
+  - No tofu boxes anywhere. No horizontal scroll at 375px.
+  - `/` still renders unchanged.
+- [ ] **Step 5: Regression batch.** `pnpm test && python3 -I scripts/subset-fonts.py --check && pnpm lint && pnpm build`; all succeed.
+- [ ] **Step 6:** Show the user (screenshots or the running pane). **Commit** after approval: `feat(character): quiz and free result pages`.
+
+---
+
+### Task 5: Share images (link preview + Story card)
+
+**Outcome:** Pasting a result URL anywhere shows a 1200×630 preview of that result. "Save my card" downloads a 1080×1920 PNG.
+
+**Risk and evidence:** Visual; `next/og` font gotcha. Evidence: fetch both routes in dev and inspect the PNGs visually. `curl -sI` shows `content-type: image/png`. Checkpoint: user approves the look.
+
+**Files:**
+- Create: `lib/character/og.tsx`, `app/character/r/[id]/opengraph-image.tsx`, `app/api/character/card/[id]/route.tsx`
+- Modify: `app/character/r/[id]/page.tsx` (add a "Save my card" link to `/api/character/card/{id}` with `download`, and `track('card_saved')`)
+
+**Interfaces (produces):**
+```ts
+// lib/character/og.tsx  (Node runtime only)
+export async function quizFont(): Promise<Buffer>;   // module-scoped cached readFile(join(process.cwd(), "assets/fonts/quiz-serif.ttf"))
+export function ResultCard(props: { view: ResultView; format: "og" | "story" | "wallpaper"; variant?: 1 | 2 | 3 }): JSX.Element;
+```
+- Both routes: `new ImageResponse(<ResultCard …/>, { width, height, fonts: [{ name: "Quiz Serif", data: await quizFont(), weight: 700, style: "normal" }] })`.
+- Unknown id → 404. Story card response sets `Content-Disposition: attachment; filename="my-chinese-character.png"` and `Cache-Control: public, max-age=31536000, immutable`.
+- Layout uses only flexbox (satori). The character takes about 45% of the height, then the decode line, the "{Element} {Animal}" badge and a small "learnradicals.com/character" footer.
+
+- [ ] **Step 1:** Implement.
+- [ ] **Step 2: Manual QA.** Download `/character/r/hui-rabbit-water/opengraph-image` and `/api/character/card/hui-rabbit-water` and view them. The character renders (no tofu), nothing is clipped, and the text is legible on a phone.
+- [ ] **Step 3: Regression batch.** `pnpm test && pnpm lint && pnpm build`.
+- [ ] **Step 4:** Show the user both images; **commit** after approval: `feat(character): result share images`.
+
+---
+
+### Task 6: Checkout + webhook branch + paid reading + wallpapers
+
+**Outcome:** Clicking unlock opens Stripe Checkout at $7 (or $4 in SEA) with an optional Goat-kit pre-order. After paying, the buyer sees the full reading with 3 wallpaper downloads and gets a reading email. The PDF product still works.
+
+**Risk and evidence:** Payments and authorization. **Immediate review after this task.**
+- Unit test: price-key selection (Task 3) and `metadata` building.
+- Manual: a full Stripe test-mode run with `stripe listen --forward-to localhost:3000/api/webhook`.
+- Negative checks: an unpaid or foreign session never reveals paid content or wallpapers.
+
+**Files:**
+- Create: `app/api/character/checkout/route.ts`, `app/character/r/[id]/unlock-button.tsx`, `app/character/reading/page.tsx`, `app/api/character/wallpaper/route.tsx`, `lib/email/reading-email.ts`
+- Modify: `app/api/webhook/route.ts`, `app/character/r/[id]/page.tsx`, `.env.example` (add `STRIPE_PRICE_READING_STD`, `STRIPE_PRICE_READING_SEA`, `STRIPE_PRICE_GOAT_PREORDER`, `RESEND_SEGMENT_QUIZ`)
+
+**Checkout route (`POST`, JSON body `{ id }`):**
+- `decodeResultId(id)`; if null, return 400.
+- `country = request.headers.get("x-vercel-ip-country")`; `price = process.env[readingPriceKey(country)]!`.
+- Attribution: same as `app/api/checkout/route.ts` (`parseAttribution(cookieStore.get(ATTR_COOKIE)?.value)` → `stripeMetadata(attr)`).
+- Call:
+  ```ts
+  stripe.checkout.sessions.create({
+    mode: "payment",
+    line_items: [{ price, quantity: 1 }],
+    optional_items: process.env.STRIPE_PRICE_GOAT_PREORDER ? [{ price: process.env.STRIPE_PRICE_GOAT_PREORDER, quantity: 1 }] : undefined,
+    success_url: `${BASE}/character/reading?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${BASE}/character/r/${id}`,
+    metadata: { ...attrMeta, product: "reading", result_id: id },
+    payment_intent_data: { metadata: { ...attrMeta, product: "reading", result_id: id } },
+    custom_text: { submit: { message: "Goat-year kit pre-orders are a digital download, delivered by email by Dec 20, 2026. Full refund if it doesn't ship." } },
+    ...(attr?.vid ? { client_reference_id: attr.vid } : {}),
+  })
+  ```
+  - **Confirm the delivery date with the user before launch.** Dec 20 is a placeholder date the user must approve, not a TODO.
+  - Log `[attr] {event:"checkout", product:"reading", result_id, country}`. Return `{ url }`.
+- **Before coding, confirm with a quick test-mode call** that the installed stripe-node types accept `optional_items` and `custom_text.submit` on API `2026-02-25.clover`. Neither field is in the digest's verified-against-types list. If the types reject them, read `node_modules/stripe/types/Checkout/SessionsResource.d.ts` and adapt.
+
+**Unlock button (client):** POSTs `{ id }`, then `window.location.href = url`. Calls `track('unlock_click', { id })`. Has a loading state like `CheckoutButton`. Label: "Unlock your full reading" plus the price text "$7". The server-chosen price isn't known client-side, so the page reads `headers().get('x-vercel-ip-country')` and passes `priceLabel` ("$7" or "$4") as a prop.
+
+**Reading page (`/character/reading?session_id=`):**
+- Retrieves the session. If it's missing, unpaid, or `metadata.product !== "reading"`, redirect to `/character/r/{metadata.result_id}` when a valid id exists, otherwise to `/character`.
+- Otherwise renders `getResult(metadata.result_id)`:
+  - The free block.
+  - `about`, the parts breakdown, 3 words with pinyin, `hardDays`.
+  - "Best paired with {pair.char}", linking to the pair's result with the same animal and element.
+  - Animal `profile`, element `profile`, animal `goatYear`.
+  - 3 wallpaper links `/api/character/wallpaper?session_id=…&v=1|2|3`.
+  - A "Poetic readings, the way Luna reads them" footnote.
+  - If the session's line items include the pre-order price, show "Your Goat-year kit pre-order is confirmed — it arrives by email by Dec 20." (Use `stripe.checkout.sessions.listLineItems(session.id)`.)
+- `export const dynamic = "force-dynamic"` and robots noindex, like `app/success/page.tsx`.
+
+**Wallpaper route:** verifies the session exactly as the reading page does (paid + `product === "reading"`), validates `v ∈ {1,2,3}`, and renders `ResultCard` with `format: "wallpaper"` at 1170×2532. Variants: 1 = character only, 2 = character + decode, 3 = character + pair. Returns 403 JSON for any failed check.
+
+**Webhook:**
+- In `app/api/webhook/route.ts`, inside the existing paid branch: `if (session.metadata?.product === "reading") await sendReadingEmail(email, session.id, session.metadata.result_id)`, else the existing `sendDownloadEmail`.
+- Keep the try/catch and the always-200 behavior.
+- `lib/email/reading-email.ts` builds HTML in the same style as the existing email: subject "Your Chinese character: {char}", a button linking to `/character/reading?session_id=…`, and the line "Save this email — the link is yours to keep."
+
+- [ ] **Step 1:** Unit-test a `buildReadingMetadata(attrMeta, id)` helper (in `lib/character/pricing.ts`) so `product` and `result_id` are always present and override attribution keys. RED → implement → GREEN.
+- [ ] **Step 2:** Implement the routes, pages, email and webhook branch.
+- [ ] **Step 3: Manual QA in Stripe test mode.** Use test keys in `.env.local`, test prices created with the Stripe dashboard or CLI, and `stripe listen`.
+  1. Unlock → Checkout shows $7 and the optional pre-order. Pay with 4242… → the reading page renders, all 3 wallpapers download, and the webhook log shows the reading email sent.
+  2. Repeat with the header forced to SEA: run locally via a temporary `X-Vercel-IP-Country: ID` header from `curl -X POST … -H` on the checkout route, and confirm the returned session's amount is $4 with `stripe checkout sessions retrieve`.
+  3. Open the reading URL with a PDF-product session id → redirected, no paid content. Open a wallpaper URL with a bogus id → 403.
+  4. Buy the original PDF on `/` → the PDF email and download still work.
+- [ ] **Step 4: Regression batch.** `pnpm test && pnpm lint && pnpm build`.
+- [ ] **Step 5: Immediate review** (payments/authz) by a fresh reviewer. Then **commit**: `feat(character): checkout, paid reading, wallpapers`.
+
+---
+
+### Task 7: Email capture
+
+**Outcome:** "Email me my reading" on the free result saves the visitor as a Resend contact in the quiz segment, with result properties, and sends them their free card.
+
+**Risk and evidence:** External write plus input handling. Automated check of email validation. Manual check with a real address on test or production Resend. Checkpoint: self-review.
+
+**Files:**
+- Create: `app/api/character/email/route.ts`, `app/character/r/[id]/email-form.tsx`
+- Modify: `lib/email/reading-email.ts` (add `freeCardEmail(view)`), `app/character/r/[id]/page.tsx`
+
+**Route (`POST { email, id }`):**
+- Validate `id` with `decodeResultId` and the email with a simple regex (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`, max 254 chars). Return 400 on failure.
+- `resend.contacts.create({ email, unsubscribed: false, properties: { result_id: id, animal, element }, segments: [{ id: process.env.RESEND_SEGMENT_QUIZ! }] })`. If the contact already exists (error returned), fall back to `resend.contacts.segments.add({ email, segmentId })` and ignore its error.
+- Send `freeCardEmail`: the card image URL `/api/character/card/{id}`, the decode, and a link back to the result with the unlock button. From `Learn Radicals <hello@get.learnradicals.com>`.
+- Return `{ ok: true }`. Log without the email address.
+
+**Form (client):** an inline email input and button, with success text "Sent — check your inbox." Calls `track('email_signup')`. No popup.
+
+- [ ] **Step 1:** Unit-test the validation helper (`isValidEmail`) in `tests/character/ids.test.ts` or a new small test. RED → GREEN.
+- [ ] **Step 2:** Implement.
+- [ ] **Step 3: Manual.** Submit your own address → the contact appears in the Resend dashboard segment with its properties, and the email arrives with the card image. Submitting again doesn't error.
+- [ ] **Step 4: Regression batch.** `pnpm test && pnpm lint && pnpm build`.
+- [ ] **Step 5: Commit.** `feat(character): email capture to Resend segment`.
+
+---
+
+### Task 8: Launch checklist (user + agent)
+
+**Outcome:** Production is configured, a real end-to-end purchase works on learnradicals.com, and the content is reviewed.
+
+**Risk and evidence:** Production money flow. Evidence: one live purchase and refund by the user, and the Stripe dashboard showing the session with `product=reading`.
+
+- [ ] **User:** create live Stripe prices:
+  - Reading std, $7 USD, one-time.
+  - Reading SEA, $4 USD.
+  - Goat-year kit pre-order, $12 USD, digital download, with the delivery date in the product description.
+- [ ] **User:** create the Resend segment "Character quiz".
+- [ ] **User:** add `STRIPE_PRICE_READING_STD`, `STRIPE_PRICE_READING_SEA`, `STRIPE_PRICE_GOAT_PREORDER` and `RESEND_SEGMENT_QUIZ` to Vercel production env.
+- [ ] **User:** confirm the pre-order delivery date (default Dec 20, 2026) and refund promise.
+- [ ] **Launch gate:** a fluent Chinese reader reviews `lib/character/content/characters.ts` (chars, pinyin, the 3 words, no mistranslations). Changes go back through `pnpm test`.
+- [ ] Merge `feat/character-quiz` (with the user's OK), deploy, and do one live purchase plus a refund.
+- [ ] Point the Threads bio link at `https://learnradicals.com/character`. The weekly content loop's CTA rules are the user's call; note in `content/threads/context.md` that the quiz is live.
+- [ ] Record the start date. After 14 days, read the success criteria from the spec:
+  - Completion: Vercel `quiz_complete` / `quiz_start` ≥ 40%.
+  - Unlock: Stripe reading sales / `quiz_complete` ≥ 3%.
+  - Pre-orders ≥ 10.

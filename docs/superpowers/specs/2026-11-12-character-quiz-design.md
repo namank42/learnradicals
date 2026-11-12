@@ -1,0 +1,104 @@
+# "What's Your Chinese Character?" Quiz Funnel — Design
+
+Date: 2026-11-12
+Status: approved in conversation, pending written-spec review
+Docs digest: `docs/superpowers/research/2026-11-12-character-quiz-docs.md`
+
+## Why
+
+@lunalang42 reached 106K viewers in the last 30 days (Oct 13 – Nov 11), but learnradicals.com got 21 profile-link clicks and the $27 guide made 0 sales in Aug–Sep. Viewers are 48% women, 66% aged 25–44, and ~43% in Southeast Asia (Indonesia, Vietnam, Singapore, Malaysia). The most-reposted posts are one-character poetic decodes (朋 53.8K views, 347 reposts + 134 shares), and luck/fate posts do well (Chinese New Year bans 37.5K). The funnel turns that format into a personal, shareable result with a cheap impulse unlock, and leads into a Year of the Goat 2027 kit pre-order (a digital download).
+
+## Constraints
+
+- **Digital products only.** No physical goods, print-on-demand or shipping, now or later.
+- Lives inside the existing learnradicals Next.js 16 app. No database and no new services: Stripe holds purchases, Resend holds emails.
+- Direct URL `learnradicals.com/character`; no `/t/` short link. Existing attribution middleware still records UTM/referrer.
+- All reading content is pre-written and reviewed. Nothing is generated at purchase time.
+- Readings are labeled as poetic readings ("the way Luna reads it"), never as etymology or history.
+
+## User flow
+
+1. **Hook** (`/character`): "Every Chinese character hides a story. Which one is yours?" → Start.
+2. **Birth date** → zodiac animal + element (Lunar New Year aware).
+3. **Four tap questions** (no typing, under 30 seconds) → soul character.
+4. **Free result** (`/character/r/[id]`):
+   - Big character, pinyin, meaning, one-line decode; animal + element badge (e.g. "Water Rabbit").
+   - "Save my card": 1080×1920 Story image.
+   - Per-result link preview (1200×630) so shared links show the visitor's character.
+   - Optional "Email me my reading" box.
+   - Unlock button: $7, or $4 in Southeast Asia.
+5. **Stripe Checkout**: local currency via Adaptive Pricing, Apple Pay; optional Goat-kit pre-order item.
+6. **Paid reading** (`/character/reading?session_id=…`): full character deep dive, animal and element profiles, Year of the Goat teaser, 3 wallpaper downloads. The same reading is emailed.
+7. **Goat kit pre-order** offer (about $12, **digital download**: 2027 planner PDF, lucky-character guide per animal, home-printable art; delivered by a fixed December date, full refund if it doesn't ship).
+
+## Content model (`lib/character/`)
+
+- **24 soul characters**, chosen from the best decode posts by reposts + shares (candidates: 朋 慧 愈 忙 安 信 休 仁 香 萌 和 心 …). Each has:
+  - Free: character, pinyin, meaning, one-line decode.
+  - Paid: 150–250 word "what this says about you", parts breakdown, 3 everyday words with pinyin, a line for hard days, a "best paired with" character.
+- **12 animals**: free badge line and a ~100-word paid profile each.
+- **5 elements**: free badge line and a ~60-word paid profile each.
+- **12 Year of the Goat 2027 teasers**, one paragraph per animal, ending in the kit pre-order.
+- **Quiz**: 4 questions with 4 answers each. Each answer adds weights to 3–4 characters; the highest total wins; ties break deterministically from the birth date.
+- **Result id**: `{character-slug}-{animal}-{element}` (e.g. `hui-rabbit-water`). 24 × 12 × 5 = 1,440 combinations.
+- Claude drafts all copy in Luna's voice. **Risk:** a fluent Chinese speaker must review the characters, pinyin and everyday words before launch. No reviewer has been named yet.
+
+## Architecture
+
+**Pages**
+- `app/character/page.tsx`: client-side quiz.
+- `app/character/r/[id]/page.tsx`: free result with `generateMetadata` for the per-result OG image.
+- `app/character/reading/page.tsx`: checks `checkout.sessions.retrieve(session_id)` is paid and that `metadata.product === "reading"`, then renders the full reading for `metadata.result_id`.
+
+**Image routes (`next/og` ImageResponse, Node runtime)**
+- `app/character/r/[id]/opengraph-image.tsx`: 1200×630, free.
+- `app/api/character/card/[id]/route.ts`: 1080×1920 Story card, free.
+- `app/api/character/wallpaper/route.ts?session_id=&v=1..3`: paid; verifies the session the same way `app/api/download` does.
+- Font: a subset TTF of Noto Serif SC containing only the library's characters plus Latin, stored under `assets/fonts/` and added to `outputFileTracingIncludes`. The existing WOFF2 files cannot be used.
+
+**API routes**
+- `POST /api/character/checkout`:
+  - Validates `result_id`.
+  - Reads `x-vercel-ip-country`; uses `STRIPE_PRICE_READING_SEA` for ID, VN, MY, PH, TH, otherwise `STRIPE_PRICE_READING_STD` (also the default).
+  - Adds `optional_items: [{ price: STRIPE_PRICE_GOAT_PREORDER, quantity: 1 }]`.
+  - Metadata: `product=reading`, `result_id`, plus existing `stripeMetadata(attr)`.
+- `POST /api/character/email`: validates the email; `resend.contacts.create({ email, properties: { result_id, animal, element }, segments: [{ id: RESEND_SEGMENT_QUIZ }] })`; sends the free card email.
+- `app/api/webhook/route.ts`: branch on `metadata.product`:
+  - `reading` → reading email with the reading link.
+  - Otherwise → the existing PDF email (unchanged).
+  - Goat-kit pre-orders are identified from line items for later fulfilment (by email download) or refund.
+
+**Setup the user does once:** create Stripe prices `READING_STD` ($7 USD), `READING_SEA` ($4 USD) and `GOAT_PREORDER` (~$12 USD); create Resend segment "Character quiz"; add the four env vars to Vercel.
+
+**Measurement:** Vercel Analytics custom events `quiz_start`, `quiz_complete`, `card_saved`, `unlock_click`, `email_signup`. Purchases and pre-orders come from Stripe. The Web Analytics API currently returns 404 for this project, so events may only be readable in the Vercel dashboard.
+
+## Edge cases
+
+- **Lunar New Year boundaries:** a table of Lunar New Year dates for birth years 1940–2015. Outside that range, the visitor picks their animal manually.
+- **Invalid id:** redirect to `/character`.
+- **Unpaid or invalid session on the reading page:** show the free result and the unlock button, not an error.
+- **Reading email fails:** log it and still return 200; the reading page is the delivery fallback (same as the PDF today).
+- **Missing country header** (local or preview): use the standard price.
+
+## Testing
+
+- **Unit tests:**
+  - Zodiac and element at Lunar New Year boundaries, e.g. Jan 28 vs Jan 29, 1987 (Lunar New Year 1987 fell on Jan 29).
+  - Scoring is deterministic, ties resolve, and the spread across simulated answer sets reaches every character.
+  - Result-id round-trip and rejection of bad ids.
+- **Content check:** every CJK glyph used in the library is present in the subset font.
+- **Manual:** full run in Stripe test mode, covering checkout, webhook email, reading page, wallpapers and pre-order item, on a mobile viewport.
+
+## Success criteria (read after 14 days of live traffic)
+
+- At least 40% of quiz starts finish.
+- At least 3% of finishers buy the reading.
+- At least 10 Goat-kit pre-orders.
+- If unlock stays under 1%, change the price or offer before adding content.
+
+## Out of scope
+
+- Building the Goat kit itself (build it only if pre-orders arrive; it is digital-only).
+- Personalization beyond the 1,440 combinations.
+- Languages other than English.
+- Physical products of any kind (permanently excluded).
