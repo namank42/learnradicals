@@ -180,9 +180,9 @@ function Progress({ at }: { at: number }) {
 }
 
 const FAN = [
-  { rotate: -10, x: -84, y: 14, z: 1, delay: "0s" },
+  { rotate: -10, x: -94, y: 14, z: 1, delay: "0s" },
   { rotate: 0, x: 0, y: 0, z: 2, delay: "0.6s" },
-  { rotate: 10, x: 84, y: 14, z: 1, delay: "1.2s" },
+  { rotate: 10, x: 94, y: 14, z: 1, delay: "1.2s" },
 ];
 
 function CardFan() {
@@ -201,7 +201,7 @@ function CardFan() {
               style={{ animationDelay: f.delay }}
             >
               <span className="quiz-char text-[54px] leading-none text-red">{card.char}</span>
-              <span className="mt-2 text-[10px] font-medium uppercase tracking-[0.18em] text-gray">{card.meaning}</span>
+              <span className="mt-2 text-[10px] font-medium uppercase tracking-[0.14em] text-gray">{card.meaning}</span>
               <span className="quiz-char mt-1 text-xs text-gold">{card.parts[0]} + {card.parts[1]}</span>
             </div>
           </div>
