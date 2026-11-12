@@ -3,7 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getResult } from "@/lib/character";
-import { readingPriceKey } from "@/lib/character/pricing";
+import { displayPrices } from "@/lib/character/pricing";
 import { ShareButton } from "../../share-button";
 import "../../character.css";
 
@@ -30,7 +30,7 @@ export default async function ResultPage({ params }: Props) {
 
   const { character: c, animal, element } = view;
   const country = (await headers()).get("x-vercel-ip-country");
-  const priceLabel = readingPriceKey(country) === "STRIPE_PRICE_READING_SEA" ? "$4" : "$7";
+  const priceLabel = displayPrices(country).reading;
 
   return (
     <main className="quiz-main flex min-h-[100dvh] justify-center px-4 py-6 md:items-center">

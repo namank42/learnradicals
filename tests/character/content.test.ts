@@ -7,7 +7,7 @@ import { ANIMALS, ELEMENTS } from "@/lib/character/types";
 
 const words = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
 const BANNED = /etymolog|originally meant|historically/i;
-export const PREORDER_LINE = "Your full 2027 Goat-year kit is coming — pre-order it below.";
+export const KIT_LINE = "Your 2027 Goat-year kit has the rest, month by month.";
 
 const allStrings = (o: unknown): string[] =>
   typeof o === "string" ? [o] : Array.isArray(o) ? o.flatMap(allStrings)
@@ -67,7 +67,7 @@ describe("animals and elements", () => {
       expect(words(a.profile)).toBeLessThanOrEqual(120);
       expect(words(a.goatYear)).toBeGreaterThanOrEqual(60);
       expect(words(a.goatYear)).toBeLessThanOrEqual(100);
-      expect(a.goatYear.trim().endsWith(PREORDER_LINE)).toBe(true);
+      expect(a.goatYear.trim().endsWith(KIT_LINE)).toBe(true);
     }
   });
 

@@ -10,6 +10,20 @@ export function readingPriceKey(country: string | null): ReadingPriceKey {
     : "STRIPE_PRICE_READING_STD";
 }
 
+export type KitPriceKey = "STRIPE_PRICE_GOAT_KIT_SEA" | "STRIPE_PRICE_GOAT_KIT_STD";
+
+/** Kit add-on price for a country: +$5 standard, +$3 in Southeast Asia. */
+export function kitPriceKey(country: string | null): KitPriceKey {
+  return readingPriceKey(country) === "STRIPE_PRICE_READING_SEA" ? "STRIPE_PRICE_GOAT_KIT_SEA" : "STRIPE_PRICE_GOAT_KIT_STD";
+}
+
+/** Display prices for UI labels (Stripe holds the real amounts). */
+export function displayPrices(country: string | null): { reading: string; kit: string; bundle: string } {
+  return readingPriceKey(country) === "STRIPE_PRICE_READING_SEA"
+    ? { reading: "$4", kit: "$3", bundle: "$7" }
+    : { reading: "$7", kit: "$5", bundle: "$12" };
+}
+
 /** Stripe metadata for a reading purchase. product/result_id always win over attribution keys. */
 export function buildReadingMetadata(
   attribution: Record<string, string>,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildReadingMetadata, readingPriceKey } from "@/lib/character/pricing";
+import { buildReadingMetadata, displayPrices, kitPriceKey, readingPriceKey } from "@/lib/character/pricing";
 
 describe("readingPriceKey", () => {
   it.each([
@@ -22,5 +22,15 @@ describe("buildReadingMetadata", () => {
     expect(
       buildReadingMetadata({ vid: "v1", product: "spoofed", result_id: "x" }, "wisdom-rabbit-water"),
     ).toEqual({ vid: "v1", product: "reading", result_id: "wisdom-rabbit-water" });
+  });
+});
+
+describe("kit pricing", () => {
+  it("is +$5 standard and +$3 in Southeast Asia", () => {
+    expect(kitPriceKey("US")).toBe("STRIPE_PRICE_GOAT_KIT_STD");
+    expect(kitPriceKey("id")).toBe("STRIPE_PRICE_GOAT_KIT_SEA");
+    expect(kitPriceKey(null)).toBe("STRIPE_PRICE_GOAT_KIT_STD");
+    expect(displayPrices("US")).toEqual({ reading: "$7", kit: "$5", bundle: "$12" });
+    expect(displayPrices("VN")).toEqual({ reading: "$4", kit: "$3", bundle: "$7" });
   });
 });

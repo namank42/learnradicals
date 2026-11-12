@@ -29,7 +29,7 @@ export type AnimalProfile = {
   zh: string; // e.g. "兔"
   badge: string; // free, ≤ 60 chars
   profile: string; // paid, 80–120 words
-  goatYear: string; // paid, 60–100 words, ends with the pre-order line
+  goatYear: string; // paid, 60–100 words, ends with the kit line
 };
 
 export type ElementProfile = {

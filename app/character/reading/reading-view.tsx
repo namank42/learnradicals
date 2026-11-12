@@ -5,7 +5,7 @@ import { Reveal } from "../reveal";
 import { ShareButton } from "../share-button";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const PREORDER_LINE = "Your full 2027 Goat-year kit is coming — pre-order it below.";
+const KIT_LINE = "Your 2027 Goat-year kit has the rest, month by month.";
 
 function Section({
   eyebrow,
@@ -30,15 +30,26 @@ function Section({
 }
 
 export type ReadingMode =
-  | { kind: "owner"; wallpaperQuery: string; preordered: boolean; shareUrl: string }
+  | { kind: "owner"; wallpaperQuery: string; hasKit: boolean; shareUrl: string }
   | { kind: "example"; backToId: string | null }
   | { kind: "shared" };
 
-export function ReadingView({ view, mode, reflection }: { view: ResultView; mode: ReadingMode; reflection?: string | null }) {
+export function ReadingView({
+  view,
+  mode,
+  reflection,
+  kitPrice = "$5",
+}: {
+  view: ResultView;
+  mode: ReadingMode;
+  reflection?: string | null;
+  /** Regional kit add-on label, e.g. "$5" or "$3". */
+  kitPrice?: string;
+}) {
   const owner = mode.kind === "owner" ? mode : null;
   const { character: c, animal, element, pair } = view;
   const about = splitAbout(c.about);
-  const goatYear = animal.goatYear.replace(PREORDER_LINE, "").trim();
+  const goatYear = animal.goatYear.replace(KIT_LINE, "").trim();
   const yearName = `${cap(element.element)} ${cap(animal.animal)}`;
 
   return (
@@ -172,13 +183,26 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
         <p className="text-[17px] leading-relaxed text-ink">{goatYear}</p>
         {mode.kind !== "shared" && (
           <div className="mt-5 rounded-2xl bg-cream px-5 py-5">
-            {owner?.preordered ? (
-              <p className="font-medium text-ink">Your 2027 Goat-year kit is pre-ordered. It arrives by email by Dec 20.</p>
+            {owner?.hasKit ? (
+              <>
+                <p className="font-heading text-lg font-bold">Your 2027 Goat-year kit</p>
+                <p className="mt-1 text-sm text-gray">
+                  20 pages: your {cap(animal.animal)} edition cover, your lucky guide, 12 planner months and 6 printable art pieces.
+                </p>
+                <a
+                  href={`/api/character/kit?${owner.wallpaperQuery}`}
+                  download
+                  className="mt-4 flex w-full items-center justify-center rounded-2xl bg-ink px-6 py-4 font-medium text-paper"
+                >
+                  Download your kit (PDF) &darr;
+                </a>
+              </>
             ) : (
               <>
                 <p className="font-heading text-lg font-bold">The 2027 Goat-year kit</p>
                 <p className="mt-1 text-sm text-gray">
-                  Digital download: a 2027 planner, your animal&rsquo;s lucky months, colors and characters, and printable art.
+                  A 20-page digital download: your {cap(animal.animal)} edition planner, your lucky colors, numbers and best
+                  matches, 12 months with a character for each, and 6 printable art pieces.
                 </p>
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   {[1, 2, 3].map((p) => (
@@ -195,7 +219,7 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
                 <p className="mt-2 text-center text-[11px] uppercase tracking-[0.18em] text-gray/80">Preview</p>
                 {/* Kit-only checkout is wired in Task 6. */}
                 <button disabled className="mt-4 w-full rounded-2xl bg-ink px-6 py-4 font-medium text-paper disabled:cursor-not-allowed">
-                  Pre-order — $12
+                  {mode.kind === "example" ? `Add it to your reading for ${kitPrice}` : `Get the kit — ${kitPrice}`}
                 </button>
               </>
             )}

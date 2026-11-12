@@ -6,7 +6,8 @@ import { parseAnswers } from "./reflection";
 export type ReadingAccess = {
   resultId: string;
   answers: number[] | null;
-  preordered: boolean;
+  /** Bought the 2027 Goat-year kit with this checkout. */
+  hasKit: boolean;
   sessionId: string | null;
   example?: boolean;
 };
@@ -22,10 +23,12 @@ export async function getReadingAccess(opts: {
   sessionId?: string | null;
   previewId?: string | null;
   previewAnswers?: string | null;
+  /** Local preview only: pretend the kit was bought. */
+  previewKit?: boolean;
   example?: boolean;
 }): Promise<ReadingAccess | null> {
   if (opts.example) {
-    return { resultId: EXAMPLE_READING.id, answers: [...EXAMPLE_READING.answers], preordered: false, sessionId: null, example: true };
+    return { resultId: EXAMPLE_READING.id, answers: [...EXAMPLE_READING.answers], hasKit: false, sessionId: null, example: true };
   }
   if (opts.sessionId) {
     try {
@@ -34,19 +37,19 @@ export async function getReadingAccess(opts: {
       const resultId = session.metadata?.result_id ?? "";
       if (session.payment_status !== "paid" || session.metadata?.product !== "reading") return null;
       if (!decodeResultId(resultId)) return null;
-      const preorderPrice = process.env.STRIPE_PRICE_GOAT_PREORDER;
-      let preordered = false;
-      if (preorderPrice) {
+      const kitPrices = [process.env.STRIPE_PRICE_GOAT_KIT_STD, process.env.STRIPE_PRICE_GOAT_KIT_SEA].filter(Boolean);
+      let hasKit = false;
+      if (kitPrices.length) {
         const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 10 });
-        preordered = items.data.some((li) => li.price?.id === preorderPrice);
+        hasKit = items.data.some((li) => !!li.price?.id && kitPrices.includes(li.price.id));
       }
-      return { resultId, answers: parseAnswers(session.metadata?.answers), preordered, sessionId: session.id };
+      return { resultId, answers: parseAnswers(session.metadata?.answers), hasKit, sessionId: session.id };
     } catch {
       return null;
     }
   }
   if (opts.previewId && isDev() && decodeResultId(opts.previewId)) {
-    return { resultId: opts.previewId, answers: parseAnswers(opts.previewAnswers), preordered: false, sessionId: null };
+    return { resultId: opts.previewId, answers: parseAnswers(opts.previewAnswers), hasKit: Boolean(opts.previewKit), sessionId: null };
   }
   return null;
 }

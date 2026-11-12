@@ -26,3 +26,8 @@
 ## Vercel geolocation — visitor country
 - Vercel sets the `x-vercel-ip-country` request header (ISO 3166-1 alpha-2) on production requests; read it in the checkout route handler with `request.headers.get('x-vercel-ip-country')`. Missing locally, so default to the standard price.
 - Source: Vercel platform header (not re-verified via context7; it is a stable header and needs no new dependency).
+
+## pdf-lib (context7: /hopding/pdf-lib) — v1.17.1 (installed)
+- `const doc = await PDFDocument.create(); doc.setTitle(...); const img = await doc.embedPng(bytes); const page = doc.addPage([w, h]); page.drawImage(img, { x: 0, y: 0, width: w, height: h }); const out: Uint8Array = await doc.save();`
+- PNG bytes come from `await new ImageResponse(...).arrayBuffer()` on the server (next/og), one image per page.
+- Source: context7 /hopding/pdf-lib (README, PDFPage.drawImage, PDFDocument.save).
