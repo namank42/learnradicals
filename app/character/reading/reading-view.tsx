@@ -3,6 +3,7 @@ import type { ResultView } from "@/lib/character";
 import { splitAbout } from "@/lib/character/reading";
 import { Reveal } from "../reveal";
 import { ShareButton } from "../share-button";
+import { KitUpsellButton } from "./kit-upsell-button";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const KIT_LINE = "Your 2027 Goat-year kit has the rest, month by month.";
@@ -76,7 +77,7 @@ function KitPreviews({ animal }: { animal: string }) {
 }
 
 export type ReadingMode =
-  | { kind: "owner"; wallpaperQuery: string; hasKit: boolean; shareUrl: string }
+  | { kind: "owner"; wallpaperQuery: string; hasKit: boolean; shareUrl: string; sessionId: string | null }
   | { kind: "example"; backTo: { id: string; char: string } | null; readingPrice: string }
   | { kind: "shared" };
 
@@ -248,16 +249,13 @@ export function ReadingView({
               </>
             ) : (
               <>
-                <p className="font-heading text-lg font-bold">The 2027 Goat-year kit</p>
+                <p className="font-heading text-lg font-bold">Add the 2027 Goat-year kit</p>
                 <p className="mt-1 text-sm text-gray">
                   A 20-page digital download: your {cap(animal.animal)} edition planner, your lucky colors, numbers and best
                   matches, 12 months with a character for each, and 6 printable art pieces.
                 </p>
                 <KitPreviews animal={animal.animal} />
-                {/* Kit-only checkout is wired in Task 6. */}
-                <button disabled className="mt-4 w-full rounded-2xl bg-ink px-6 py-4 font-medium text-paper disabled:cursor-not-allowed">
-                  {`Get the kit — ${kitPrice}`}
-                </button>
+                <KitUpsellButton sessionId={owner.sessionId} priceLabel={kitPrice} />
               </>
             )}
           </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildReadingMetadata, displayPrices, kitPriceKey, readingPriceKey } from "@/lib/character/pricing";
+import { buildReadingMetadata, displayPrices, kitPriceKey, kitPriceKeyForRegion, readingPriceKey } from "@/lib/character/pricing";
 
 describe("readingPriceKey", () => {
   it.each([
@@ -32,5 +32,13 @@ describe("kit pricing", () => {
     expect(kitPriceKey(null)).toBe("STRIPE_PRICE_GOAT_KIT_STD");
     expect(displayPrices("US")).toEqual({ reading: "$7", kit: "$5", bundle: "$12" });
     expect(displayPrices("VN")).toEqual({ reading: "$4", kit: "$3", bundle: "$7" });
+  });
+});
+
+describe("kitPriceKeyForRegion", () => {
+  it("maps the stored region to the kit price", () => {
+    expect(kitPriceKeyForRegion("sea")).toBe("STRIPE_PRICE_GOAT_KIT_SEA");
+    expect(kitPriceKeyForRegion("std")).toBe("STRIPE_PRICE_GOAT_KIT_STD");
+    expect(kitPriceKeyForRegion(undefined)).toBe("STRIPE_PRICE_GOAT_KIT_STD");
   });
 });

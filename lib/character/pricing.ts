@@ -17,6 +17,11 @@ export function kitPriceKey(country: string | null): KitPriceKey {
   return readingPriceKey(country) === "STRIPE_PRICE_READING_SEA" ? "STRIPE_PRICE_GOAT_KIT_SEA" : "STRIPE_PRICE_GOAT_KIT_STD";
 }
 
+/** Kit price for a stored region ("sea" | "std"), used by the post-purchase upsell. */
+export function kitPriceKeyForRegion(region: string | undefined): KitPriceKey {
+  return region === "sea" ? "STRIPE_PRICE_GOAT_KIT_SEA" : "STRIPE_PRICE_GOAT_KIT_STD";
+}
+
 /** Display prices for UI labels (Stripe holds the real amounts). */
 export function displayPrices(country: string | null): { reading: string; kit: string; bundle: string } {
   return readingPriceKey(country) === "STRIPE_PRICE_READING_SEA"

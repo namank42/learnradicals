@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 import { getResult } from "@/lib/character";
 import { displayPrices } from "@/lib/character/pricing";
 import { ShareButton } from "../../share-button";
+import { UnlockSheet } from "./unlock-sheet";
 import "../../character.css";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ a?: string }> };
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -23,8 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 // Designed to fit one phone screen (375×~700 inside an in-app browser) without scrolling.
-export default async function ResultPage({ params }: Props) {
+export default async function ResultPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const raw = (await searchParams).a;
+  const answers = raw && /^[0-3]{4}$/.test(raw) ? raw : null;
   const view = getResult(id);
   if (!view) redirect("/character");
 
@@ -50,15 +53,14 @@ export default async function ResultPage({ params }: Props) {
           <span className="text-gray"> · by birth year</span>
         </p>
 
-        {/* Unlock is the primary action; wired to Stripe in Task 6. */}
-        <button
-          disabled
-          title="Checkout coming soon"
-          className="anim-rise cta-button mt-6 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white disabled:cursor-not-allowed"
+        <UnlockSheet
+          id={id}
+          char={c.char}
+          answers={answers}
+          priceLabel={priceLabel}
+          className="anim-rise cta-button mt-6 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white"
           style={{ animationDelay: "0.7s" }}
-        >
-          Unlock your full reading — {priceLabel}
-        </button>
+        />
         <p className="mt-3 text-balance text-xs leading-relaxed text-gray">
           What {c.char} says about you, in love and with money, plus 3 wallpapers.
         </p>

@@ -1,4 +1,4 @@
-import Stripe from "stripe";
+import { stripe } from "./stripe-server";
 import { EXAMPLE_READING } from "./example";
 import { decodeResultId } from "./ids";
 import { parseAnswers } from "./reflection";
@@ -32,17 +32,15 @@ export async function getReadingAccess(opts: {
   }
   if (opts.sessionId) {
     try {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-      const session = await stripe.checkout.sessions.retrieve(opts.sessionId);
+      const s = stripe();
+      const session = await s.checkout.sessions.retrieve(opts.sessionId, { expand: ["payment_intent"] });
       const resultId = session.metadata?.result_id ?? "";
       if (session.payment_status !== "paid" || session.metadata?.product !== "reading") return null;
       if (!decodeResultId(resultId)) return null;
-      const kitPrices = [process.env.STRIPE_PRICE_GOAT_KIT_STD, process.env.STRIPE_PRICE_GOAT_KIT_SEA].filter(Boolean);
+      const pi = session.payment_intent;
       let hasKit = false;
-      if (kitPrices.length) {
-        const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 10 });
-        hasKit = items.data.some((li) => !!li.price?.id && kitPrices.includes(li.price.id));
-      }
+      const kitPi = pi && typeof pi !== "string" ? pi.metadata?.kit_pi : undefined;
+      if (kitPi) hasKit = (await s.paymentIntents.retrieve(kitPi)).status === "succeeded";
       return { resultId, answers: parseAnswers(session.metadata?.answers), hasKit, sessionId: session.id };
     } catch {
       return null;

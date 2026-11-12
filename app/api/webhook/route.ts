@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import { sendReadingEmail } from "@/lib/email/reading-email";
 
 async function sendDownloadEmail(email: string, sessionId: string) {
   const resend = new Resend(process.env.RESEND_API_KEY!);
@@ -53,7 +54,11 @@ export async function POST(request: Request) {
 
     if (session.payment_status === "paid" && session.customer_details?.email) {
       try {
-        await sendDownloadEmail(session.customer_details.email, session.id);
+        if (session.metadata?.product === "reading" && session.metadata.result_id) {
+          await sendReadingEmail(session.customer_details.email, session.id, session.metadata.result_id);
+        } else {
+          await sendDownloadEmail(session.customer_details.email, session.id);
+        }
       } catch (err) {
         console.error("Failed to send download email:", err);
         // Return 200 anyway — user has the success page as fallback
