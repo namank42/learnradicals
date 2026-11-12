@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Creates the character-quiz products and prices with the Stripe CLI and prints the env vars.
-# Usage: scripts/stripe-setup.sh          (test mode)
-#        scripts/stripe-setup.sh --live   (live mode; review before running)
+# Usage: STRIPE_PROJECT=learnradicals scripts/stripe-setup.sh          (test mode)
+#        STRIPE_PROJECT=learnradicals scripts/stripe-setup.sh --live   (live mode; review before running)
 set -euo pipefail
+# Set STRIPE_PROJECT to use a named CLI profile (e.g. `stripe login --project-name learnradicals`),
+# so the Learn Radicals account is used without logging other projects out.
 MODE=()
 [[ "${1:-}" == "--live" ]] && MODE=(--live)
+[[ -n "${STRIPE_PROJECT:-}" ]] && MODE+=(--project-name "$STRIPE_PROJECT")
 
 price_id() { python3 -E -c 'import sys,json;print(json.load(sys.stdin)["id"])'; }
 
