@@ -24,3 +24,9 @@
 @media (prefers-reduced-motion: reduce) {
   .quiz-float { animation: none; }
 }
+
+/* globals.css adds 72px bottom padding on mobile for the homepage's sticky CTA.
+   Quiz pages have no sticky bar and must fit one screen. */
+main.quiz-main {
+  padding-bottom: 1.5rem;
+}

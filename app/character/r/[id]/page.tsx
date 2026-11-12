@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getResult } from "@/lib/character";
 import { readingPriceKey } from "@/lib/character/pricing";
-import { ShareBlock } from "./share-block";
+import { ShareButton } from "./share-button";
 import "../../character.css";
 
 type Props = { params: Promise<{ id: string }> };
@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+// Designed to fit one phone screen (375×~700 inside an in-app browser) without scrolling.
 export default async function ResultPage({ params }: Props) {
   const { id } = await params;
   const view = getResult(id);
@@ -32,52 +33,41 @@ export default async function ResultPage({ params }: Props) {
   const priceLabel = readingPriceKey(country) === "STRIPE_PRICE_READING_SEA" ? "$4" : "$7";
 
   return (
-    <main className="min-h-[100dvh] px-4 py-12 md:py-20">
-      <section className="mx-auto max-w-md text-center">
-        <p className="text-sm font-medium uppercase tracking-widest text-gray">Your Chinese character</p>
+    <main className="quiz-main flex min-h-[100dvh] justify-center px-4 py-6 md:items-center">
+      <section className="flex w-full max-w-md flex-col items-center text-center">
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">Your Chinese character</p>
 
-        <p className="quiz-char mt-6 text-[9rem] leading-none text-red" lang="zh">{c.char}</p>
-        <p className="mt-4 text-xl text-ink">
+        <p className="quiz-char mt-3 text-[6.5rem] leading-none text-red" lang="zh">{c.char}</p>
+        <p className="mt-2 text-lg text-ink">
           {c.pinyin} <span className="text-gray">·</span> {c.meaning}
         </p>
 
-        <p className="mt-6 font-heading text-2xl font-bold leading-snug">&ldquo;{c.decode}&rdquo;</p>
+        <p className="mt-4 font-heading text-[1.35rem] font-bold leading-snug">&ldquo;{c.decode}&rdquo;</p>
 
-        <p className="mt-5 text-gray">
-          {c.parts.map((p, i) => (
-            <span key={`${p.char}-${i}`}>
-              {i > 0 && <span className="mx-2 text-gray-light">+</span>}
-              <span className="quiz-char text-ink" lang="zh">{p.char}</span> {p.gloss}
-            </span>
-          ))}
+        <p className="mt-3 text-sm text-gold">
+          {cap(element.element)} {cap(animal.animal)}{" "}
+          <span className="quiz-char" lang="zh">{element.zh}{animal.zh}</span>
+          <span className="text-gray"> · by birth year</span>
         </p>
 
-        <div className="mt-8 rounded-2xl border-l-4 border-l-gold bg-white px-5 py-4 text-left shadow-lg shadow-black/5">
-          <p className="font-heading text-lg font-bold">
-            {cap(element.element)} {cap(animal.animal)}{" "}
-            <span className="quiz-char text-gold" lang="zh">{element.zh}{animal.zh}</span>
-          </p>
-          <p className="mt-1 text-sm text-gray">By birth year. {animal.badge} {element.badge}</p>
-        </div>
-
-        {/* Unlock is wired to Stripe in Task 6. */}
+        {/* Unlock is the primary action; wired to Stripe in Task 6. */}
         <button
           disabled
-          className="mt-8 w-full cursor-not-allowed rounded-2xl bg-red/60 px-8 py-5 text-lg font-medium text-white"
+          title="Checkout coming soon"
+          className="cta-button mt-6 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white disabled:cursor-not-allowed"
         >
           Unlock your full reading — {priceLabel}
         </button>
-        <p className="mt-3 text-sm text-gray">What {c.char} says about you, your animal and element, and 3 wallpapers.</p>
+        <p className="mt-2 text-xs text-gray">What {c.char} says about you, your animal and element, plus 3 wallpapers.</p>
 
-        <ShareBlock id={id} char={c.char} decode={c.decode} />
+        <div className="mt-4">
+          <ShareButton id={id} char={c.char} decode={c.decode} variant="link" />
+        </div>
 
-        <p className="mt-10 text-xs leading-relaxed text-gray">
-          Your animal and element come from the Chinese zodiac. Your character is matched from your
-          answers — a poetic reading, just for fun.
+        <p className="mt-5 text-[11px] leading-relaxed text-gray/80">
+          Animal and element from the Chinese zodiac. Your character is matched from your answers — a poetic
+          reading, just for fun. <Link href="/character" className="underline hover:text-ink">Take the quiz</Link>
         </p>
-        <Link href="/character" className="mt-4 inline-block text-sm text-gray underline hover:text-ink">
-          Not you? Take the quiz
-        </Link>
       </section>
     </main>
   );

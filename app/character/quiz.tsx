@@ -61,23 +61,23 @@ export function Quiz() {
     return (
       <section className="mx-auto w-full max-w-md text-center">
         <CardFan />
-        <p className="mt-8 text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">Chinese character quiz</p>
-        <h1 className="mt-4 font-heading text-[clamp(2rem,8vw,2.75rem)] font-bold leading-[1.05] tracking-tight">
+        <p className="mt-5 text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">Chinese character quiz</p>
+        <h1 className="mt-3 font-heading text-[clamp(2rem,8vw,2.75rem)] font-bold leading-[1.05] tracking-tight">
           Every Chinese character hides a story. <span className="text-red">Which one is yours?</span>
         </h1>
-        <p className="mt-5 text-lg text-gray">
+        <p className="mt-3 text-base text-gray">
           Find the Chinese character that reads like you, plus your zodiac animal and year element.
         </p>
         <button
           onClick={start}
-          className="cta-button mt-8 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white"
+          className="cta-button mt-6 w-full rounded-2xl bg-red px-8 py-4 text-lg font-medium text-white"
         >
           Find my character
         </button>
-        <p className="mt-3 text-sm text-gray">Free result &middot; No sign-up &middot; Under a minute</p>
+        <p className="mt-2 text-sm text-gray">Free result &middot; No sign-up &middot; Under a minute</p>
 
 
-        <p className="mt-6 text-sm text-gray">
+        <p className="mt-4 text-xs text-gray">
           From{" "}
           <a href="https://threads.net/@lunalang42" target="_blank" rel="noopener noreferrer"
             className="font-medium text-ink underline">
@@ -163,14 +163,14 @@ function Progress({ at }: { at: number }) {
 }
 
 const FAN = [
-  { rotate: -10, x: -96, y: 16, z: 1, delay: "0s" },
+  { rotate: -10, x: -84, y: 14, z: 1, delay: "0s" },
   { rotate: 0, x: 0, y: 0, z: 2, delay: "0.6s" },
-  { rotate: 10, x: 96, y: 16, z: 1, delay: "1.2s" },
+  { rotate: 10, x: 84, y: 14, z: 1, delay: "1.2s" },
 ];
 
 function CardFan() {
   return (
-    <div className="relative mx-auto h-[190px] w-full max-w-[320px]" aria-hidden="true">
+    <div className="relative mx-auto h-[158px] w-full max-w-[320px]" aria-hidden="true">
       {EXAMPLE_CARDS.map((card, i) => {
         const f = FAN[i];
         return (
@@ -180,10 +180,10 @@ function CardFan() {
             style={{ transform: `translateX(calc(-50% + ${f.x}px)) translateY(${f.y}px) rotate(${f.rotate}deg)`, zIndex: f.z }}
           >
             <div
-              className="quiz-float flex h-[168px] w-[118px] flex-col items-center justify-center rounded-2xl border border-gray-light/60 bg-white shadow-xl shadow-black/10"
+              className="quiz-float flex h-[142px] w-[100px] flex-col items-center justify-center rounded-2xl border border-gray-light/60 bg-white shadow-xl shadow-black/10"
               style={{ animationDelay: f.delay }}
             >
-              <span className="quiz-char text-[64px] leading-none text-red">{card.char}</span>
+              <span className="quiz-char text-[54px] leading-none text-red">{card.char}</span>
               <span className="mt-2 text-[10px] font-medium uppercase tracking-[0.18em] text-gray">{card.meaning}</span>
               <span className="quiz-char mt-1 text-xs text-gold">{card.parts[0]} + {card.parts[1]}</span>
             </div>

@@ -334,6 +334,7 @@ export function ResultCard(props: { view: ResultView; format: "og" | "story" | "
   - Animal `profile`, element `profile`, animal `goatYear`.
   - 3 wallpaper links `/api/character/wallpaper?session_id=…&v=1|2|3`.
   - A "Poetic readings, the way Luna reads them" footnote.
+  - **Big share moment** (decided Nov 12): the free result keeps only a small one-tap "Share my character ↗" link under the big unlock button. The paid reading page gets the prominent `<ShareButton variant="button" />` plus the Story-card preview, since buyers are the happiest sharers.
   - If the session's line items include the pre-order price, show "Your Goat-year kit pre-order is confirmed — it arrives by email by Dec 20." (Use `stripe.checkout.sessions.listLineItems(session.id)`.)
 - `export const dynamic = "force-dynamic"` and robots noindex, like `app/success/page.tsx`.
 
