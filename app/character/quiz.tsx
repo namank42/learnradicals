@@ -5,6 +5,7 @@ import { useState } from "react";
 import { track } from "@vercel/analytics";
 import { QUESTIONS } from "@/lib/character/content/questions";
 import { encodeResultId } from "@/lib/character/encode";
+import { EXAMPLE_RESULT as EXAMPLE } from "@/lib/character/example";
 import { scoreCharacter } from "@/lib/character/scoring";
 import { getZodiac, MAX_BIRTH_YEAR, MIN_BIRTH_YEAR } from "@/lib/character/zodiac";
 
@@ -59,17 +60,41 @@ export function Quiz() {
   if (step === "hook") {
     return (
       <section className="mx-auto w-full max-w-md text-center">
-        <p className="quiz-char text-7xl text-red" aria-hidden="true">字</p>
-        <h1 className="mt-6 font-heading text-[clamp(2rem,8vw,2.75rem)] font-bold leading-[1.05] tracking-tight">
+        <p className="text-sm font-medium uppercase tracking-widest text-gray">Luna&rsquo;s character quiz</p>
+        <h1 className="mt-4 font-heading text-[clamp(2rem,8vw,2.75rem)] font-bold leading-[1.05] tracking-tight">
           Every Chinese character hides a story. <span className="text-red">Which one is yours?</span>
         </h1>
-        <p className="mt-5 text-lg text-gray">Your birthday and four quick taps. Under a minute.</p>
+        <p className="mt-5 text-lg text-gray">
+          Find the Chinese character that reads like you, plus your zodiac animal and year element.
+        </p>
         <button
           onClick={start}
-          className="cta-button mt-10 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white"
+          className="cta-button mt-8 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white"
         >
           Find my character
         </button>
+        <p className="mt-3 text-sm text-gray">Free result &middot; No sign-up &middot; Under a minute</p>
+
+        <figure className="mt-10 rounded-2xl border-l-4 border-l-red bg-white px-5 py-5 text-left shadow-lg shadow-black/5">
+          <figcaption className="text-xs font-medium uppercase tracking-widest text-gray">Example result</figcaption>
+          <div className="mt-3 flex items-center gap-4">
+            <span className="quiz-char text-6xl leading-none text-red" lang="zh">{EXAMPLE.char}</span>
+            <div>
+              <p className="text-sm text-gray">{EXAMPLE.pinyin} &middot; {EXAMPLE.meaning}</p>
+              <p className="mt-1 font-heading text-lg font-bold leading-snug">{EXAMPLE.decode}</p>
+              <p className="mt-1 text-sm text-gold">{EXAMPLE.year}</p>
+            </div>
+          </div>
+        </figure>
+
+        <p className="mt-6 text-sm text-gray">
+          From{" "}
+          <a href="https://threads.net/@lunalang42" target="_blank" rel="noopener noreferrer"
+            className="font-medium text-ink underline">
+            @lunalang42
+          </a>
+          , read by 100,000+ people a month on Threads.
+        </p>
       </section>
     );
   }

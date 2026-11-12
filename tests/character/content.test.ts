@@ -107,3 +107,17 @@ describe("copy rules", () => {
     for (const s of text) expect(s, s.slice(0, 60)).not.toMatch(BANNED);
   });
 });
+
+import { EXAMPLE_RESULT } from "@/lib/character/example";
+
+describe("hook example", () => {
+  it("matches the real content entry", () => {
+    const c = CHARACTERS.find((x) => x.slug === EXAMPLE_RESULT.slug)!;
+    expect({ char: c.char, pinyin: c.pinyin, meaning: c.meaning, decode: c.decode }).toEqual({
+      char: EXAMPLE_RESULT.char,
+      pinyin: EXAMPLE_RESULT.pinyin,
+      meaning: EXAMPLE_RESULT.meaning,
+      decode: EXAMPLE_RESULT.decode,
+    });
+  });
+});
