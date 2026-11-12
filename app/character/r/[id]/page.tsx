@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getResult } from "@/lib/character";
 import { readingPriceKey } from "@/lib/character/pricing";
-import { ShareButton } from "./share-button";
+import { ShareButton } from "../../share-button";
 import "../../character.css";
 
 type Props = { params: Promise<{ id: string }> };
@@ -65,8 +65,8 @@ export default async function ResultPage({ params }: Props) {
         </div>
 
         <p className="mt-5 text-[11px] leading-relaxed text-gray/80">
-          Animal and element from the Chinese zodiac. Your character is matched from your answers — a poetic
-          reading, just for fun. <Link href="/character" className="underline hover:text-ink">Take the quiz</Link>
+          Your animal and element come from the Chinese zodiac for your birth year. Your character is matched to
+          your answers. <Link href="/character" className="underline hover:text-ink">Take the quiz</Link>
         </p>
       </section>
     </main>

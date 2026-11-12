@@ -65,6 +65,13 @@ export function ResultCard({
   }
 
   const tall = format === "wallpaper";
+  // Wallpapers come in three looks: 1 light, 2 dark, 3 red.
+  const theme =
+    format !== "wallpaper" || variant === 1
+      ? { bg: C.paper, char: C.red, text: C.ink, accent: C.gold, muted: C.gray }
+      : variant === 2
+        ? { bg: C.ink, char: C.red, text: C.paper, accent: "#d9a74a", muted: "#a8a29a" }
+        : { bg: C.red, char: C.paper, text: C.paper, accent: "#f3d9a4", muted: "#f1c7c1" };
   const showDecode = format === "story" || variant === 2;
   const showPair = format === "wallpaper" && variant === 3;
 
@@ -77,7 +84,7 @@ export function ResultCard({
         justifyContent: "center",
         width: "100%",
         height: "100%",
-        background: C.paper,
+        background: theme.bg,
         fontFamily: "Quiz Serif",
         padding: tall ? "0 110px" : "0 100px",
         textAlign: "center",
@@ -86,19 +93,19 @@ export function ResultCard({
       {format === "story" && (
         <div style={{ display: "flex", fontSize: 40, color: C.gray, letterSpacing: 6 }}>MY CHINESE CHARACTER</div>
       )}
-      <div style={{ display: "flex", fontSize: tall ? 620 : 560, lineHeight: 1, color: C.red, marginTop: format === "story" ? 40 : 0 }}>
+      <div style={{ display: "flex", fontSize: tall ? 620 : 560, lineHeight: 1, color: theme.char, marginTop: format === "story" ? 40 : 0 }}>
         {c.char}
       </div>
-      <div style={{ display: "flex", fontSize: tall ? 56 : 60, color: C.ink, marginTop: 30 }}>{`${c.pinyin} · ${c.meaning}`}</div>
+      <div style={{ display: "flex", fontSize: tall ? 56 : 60, color: theme.text, marginTop: 30 }}>{`${c.pinyin} · ${c.meaning}`}</div>
       {showDecode && (
-        <div style={{ display: "flex", fontSize: tall ? 58 : 62, color: C.ink, marginTop: 60, lineHeight: 1.3 }}>
+        <div style={{ display: "flex", fontSize: tall ? 58 : 62, color: theme.text, marginTop: 60, lineHeight: 1.3 }}>
           {c.decode}
         </div>
       )}
       {showPair && (
-        <div style={{ display: "flex", alignItems: "center", marginTop: 80, fontSize: 60, color: C.gray }}>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 80, fontSize: 60, color: theme.muted }}>
           <span>with</span>
-          <span style={{ fontSize: 200, color: C.gold, marginLeft: 40 }}>{pair.char}</span>
+          <span style={{ fontSize: 200, color: theme.accent, marginLeft: 40 }}>{pair.char}</span>
         </div>
       )}
       {format === "story" && (
