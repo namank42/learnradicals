@@ -302,6 +302,7 @@ export function ResultCard(props: { view: ResultView; format: "og" | "story" | "
 - Modify: `app/api/webhook/route.ts`, `app/character/r/[id]/page.tsx`, `.env.example` (add `STRIPE_PRICE_READING_STD`, `STRIPE_PRICE_READING_SEA`, `STRIPE_PRICE_GOAT_PREORDER`, `RESEND_SEGMENT_QUIZ`)
 
 **Checkout route (`POST`, JSON body `{ id }`):**
+- Body is `{ id, answers }`; `answers` comes from the result URL (`?a=3102`, via `parseAnswers`) and is stored as `metadata.answers` so the reading can quote them. Invalid or missing answers are allowed (the reading just skips the quote).
 - `decodeResultId(id)`; if null, return 400.
 - `country = request.headers.get("x-vercel-ip-country")`; `price = process.env[readingPriceKey(country)]!`.
 - Attribution: same as `app/api/checkout/route.ts` (`parseAttribution(cookieStore.get(ATTR_COOKIE)?.value)` → `stripeMetadata(attr)`).
@@ -395,6 +396,7 @@ export function ResultCard(props: { view: ResultView; format: "og" | "story" | "
   - Goat-year kit pre-order, $12 USD, digital download, with the delivery date in the product description.
 - [ ] **User:** create the Resend segment "Character quiz".
 - [ ] **User:** add `STRIPE_PRICE_READING_STD`, `STRIPE_PRICE_READING_SEA`, `STRIPE_PRICE_GOAT_PREORDER` and `RESEND_SEGMENT_QUIZ` to Vercel production env.
+- [ ] **User:** set `READING_SHARE_SECRET` in Vercel production (a long random string). Shared reading links stop verifying if it changes.
 - [ ] **User:** confirm the pre-order delivery date (default Dec 20, 2026) and refund promise.
 - [ ] **Launch gate:** a fluent Chinese reader reviews `lib/character/content/characters.ts` (chars, pinyin, the 3 words, no mistranslations). Changes go back through `pnpm test`.
 - [ ] Merge `feat/character-quiz` (with the user's OK), deploy, and do one live purchase plus a refund.
