@@ -59,21 +59,27 @@ export default async function ResultPage({ params }: Props) {
         >
           Unlock your full reading — {priceLabel}
         </button>
-        <p className="mt-2 text-xs text-gray">
-          What {c.char} says about you, in love and with money, plus 3 wallpapers.{" "}
-          <Link href={`/character/reading/example?from=${id}`} className="font-medium text-ink underline underline-offset-2">
-            See an example
-          </Link>
+        <p className="mt-3 text-balance text-xs leading-relaxed text-gray">
+          What {c.char} says about you, in love and with money, plus 3 wallpapers.
         </p>
+        <Link
+          href={`/character/reading/example?from=${id}`}
+          className="mt-1 text-xs font-medium text-ink underline underline-offset-2"
+        >
+          See an example reading &rarr;
+        </Link>
 
-        <div className="mt-4">
+        <div className="mt-6">
           <ShareButton id={id} char={c.char} decode={c.decode} variant="link" />
         </div>
 
-        <p className="mt-5 text-[11px] leading-relaxed text-gray/80">
-          Your animal and element come from the Chinese zodiac for your birth year. Your character is matched to
-          your answers. <Link href="/character" className="underline hover:text-ink">Take the quiz</Link>
+        <p className="mx-auto mt-6 max-w-xs text-balance text-[11px] leading-relaxed text-gray/80">
+          Your animal and element come from the Chinese zodiac for your birth year. Your character is matched to your
+          answers.
         </p>
+        <Link href="/character" className="mt-2 text-[11px] text-gray/80 underline underline-offset-2 hover:text-ink">
+          Take the quiz again
+        </Link>
       </section>
     </main>
   );
