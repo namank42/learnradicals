@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ResultView } from "@/lib/character";
 import { splitAbout } from "@/lib/character/reading";
+import { Reveal } from "../reveal";
 import { ShareButton } from "../share-button";
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -8,23 +9,23 @@ const PREORDER_LINE = "Your full 2027 Goat-year kit is coming — pre-order it b
 
 function Section({ eyebrow, title, children }: { eyebrow: string; title?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section className="mt-14">
-      <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">{eyebrow}</p>
-      {title && <h2 className="mt-2 font-heading text-2xl font-bold leading-snug">{title}</h2>}
-      <div className="mt-4">{children}</div>
-    </section>
+    <Reveal className="mt-14">
+      <section>
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">{eyebrow}</p>
+        {title && <h2 className="mt-2 font-heading text-2xl font-bold leading-snug">{title}</h2>}
+        <div className="mt-4">{children}</div>
+      </section>
+    </Reveal>
   );
 }
 
-export function ReadingView({
-  view,
-  wallpaperQuery,
-  preordered,
-}: {
-  view: ResultView;
-  wallpaperQuery: string;
-  preordered: boolean;
-}) {
+export type ReadingMode =
+  | { kind: "owner"; wallpaperQuery: string; preordered: boolean; shareUrl: string }
+  | { kind: "example"; backToId: string | null }
+  | { kind: "shared" };
+
+export function ReadingView({ view, mode, reflection }: { view: ResultView; mode: ReadingMode; reflection?: string | null }) {
+  const owner = mode.kind === "owner" ? mode : null;
   const { character: c, animal, element, pair } = view;
   const about = splitAbout(c.about);
   const goatYear = animal.goatYear.replace(PREORDER_LINE, "").trim();
@@ -32,10 +33,23 @@ export function ReadingView({
 
   return (
     <article className="mx-auto w-full max-w-md pb-16 text-left">
+      {mode.kind === "example" && (
+        <div className="mb-8 rounded-2xl bg-cream px-4 py-3 text-center text-sm text-ink">
+          <span className="font-semibold">Example reading.</span> This is exactly what you get for your own character.
+        </div>
+      )}
+      {mode.kind === "shared" && (
+        <div className="mb-8 rounded-2xl bg-cream px-4 py-3 text-center text-sm text-ink">
+          Someone shared their reading with you. <span className="font-semibold">What&rsquo;s yours?</span>
+        </div>
+      )}
+
       {/* Hero */}
       <header className="text-center">
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">Your full reading</p>
-        <p className="quiz-char mt-4 text-[8rem] leading-none text-red" lang="zh">{c.char}</p>
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">
+          {mode.kind === "owner" ? "Your full reading" : "Full reading"}
+        </p>
+        <p className="anim-ink quiz-char mt-4 text-[8rem] leading-none text-red" lang="zh">{c.char}</p>
         <p className="mt-3 text-xl text-ink">
           {c.pinyin} <span className="text-gray">·</span> {c.meaning}
         </p>
@@ -47,24 +61,30 @@ export function ReadingView({
       </header>
 
       {/* Parts */}
-      <div className="mt-10 flex items-stretch justify-center gap-3">
+      <div className="mt-10 flex items-stretch justify-center gap-2">
         {c.parts.map((p, i) => (
-          <div key={`${p.char}-${i}`} className="flex items-center gap-3">
+          <div key={`${p.char}-${i}`} className="anim-pop flex items-center gap-2" style={{ animationDelay: `${0.8 + i * 0.35}s` }}>
             {i > 0 && <span className="text-xl text-gray-light">+</span>}
-            <div className="flex w-24 flex-col items-center rounded-2xl bg-white px-2 py-4 shadow-md shadow-black/5">
+            <div className="flex w-[5.25rem] flex-col items-center rounded-2xl bg-white px-2 py-4 shadow-md shadow-black/5">
               <span className="quiz-char text-4xl text-ink" lang="zh">{p.char}</span>
               <span className="mt-2 text-center text-xs text-gray">{p.gloss}</span>
             </div>
           </div>
         ))}
-        <div className="flex items-center gap-3">
+        <div className="anim-pop flex items-center gap-2" style={{ animationDelay: `${0.8 + c.parts.length * 0.35}s` }}>
           <span className="text-xl text-gray-light">=</span>
-          <div className="flex w-24 flex-col items-center rounded-2xl bg-red px-2 py-4 text-white shadow-md shadow-red/20">
+          <div className="flex w-[5.25rem] flex-col items-center rounded-2xl bg-red px-2 py-4 text-white shadow-md shadow-red/20">
             <span className="quiz-char text-4xl" lang="zh">{c.char}</span>
             <span className="mt-2 text-center text-xs opacity-90">{c.meaning}</span>
           </div>
         </div>
       </div>
+
+      {reflection && (
+        <p className="mt-10 rounded-2xl bg-white px-5 py-4 text-[17px] italic leading-relaxed text-ink shadow-md shadow-black/5">
+          {reflection}
+        </p>
+      )}
 
       <Section eyebrow={`What ${c.char} says about you`} title="Who you are">
         {about.who.map((para, i) => (
@@ -116,7 +136,7 @@ export function ReadingView({
       <Section eyebrow="Your 2027" title={<>The Year of the Fire Goat <span className="quiz-char text-gold" lang="zh">羊</span></>}>
         <p className="text-[17px] leading-relaxed text-ink">{goatYear}</p>
         <div className="mt-5 rounded-2xl bg-cream px-5 py-5">
-          {preordered ? (
+          {owner?.preordered ? (
             <p className="font-medium text-ink">Your 2027 Goat-year kit is pre-ordered. It arrives by email by Dec 20.</p>
           ) : (
             <>
@@ -133,37 +153,87 @@ export function ReadingView({
         </div>
       </Section>
 
-      <Section eyebrow="Wallpapers" title="Keep it on your lock screen">
-        <div className="grid grid-cols-3 gap-3">
-          {[1, 2, 3].map((v) => (
-            <a key={v} href={`/api/character/wallpaper?${wallpaperQuery}&v=${v}`} download className="group block">
-              {/* eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image */}
+      {owner && (
+        <Section eyebrow="Wallpapers" title="Keep it on your lock screen">
+          <div className="grid grid-cols-3 gap-3">
+            {[1, 2, 3].map((v) => (
+              <a key={v} href={`/api/character/wallpaper?${owner.wallpaperQuery}&v=${v}`} download className="group block">
+                {/* eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image */}
+                <img
+                  src={`/api/character/wallpaper?${owner.wallpaperQuery}&v=${v}`}
+                  alt={`Wallpaper ${v} for ${c.char}`}
+                  loading="lazy"
+                  className="aspect-[1170/2532] w-full rounded-xl bg-white shadow-md shadow-black/10 transition-transform group-hover:-translate-y-1"
+                />
+                <span className="mt-2 block text-center text-xs text-gray">Save &darr;</span>
+              </a>
+            ))}
+          </div>
+        </Section>
+      )}
+      {mode.kind === "example" && (
+        <Section eyebrow="Wallpapers" title="3 wallpapers, made for your character">
+          <div className="grid grid-cols-3 gap-3">
+            {[1, 2, 3].map((v) => (
+              // eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image
               <img
-                src={`/api/character/wallpaper?${wallpaperQuery}&v=${v}`}
-                alt={`Wallpaper ${v} for ${c.char}`}
+                key={v}
+                src={`/api/character/wallpaper?example=1&v=${v}`}
+                alt={`Example wallpaper ${v}`}
                 loading="lazy"
-                className="aspect-[1170/2532] w-full rounded-xl bg-white shadow-md shadow-black/10 transition-transform group-hover:-translate-y-1"
+                className="aspect-[1170/2532] w-full rounded-xl bg-white shadow-md shadow-black/10"
               />
-              <span className="mt-2 block text-center text-xs text-gray">Save &darr;</span>
-            </a>
-          ))}
-        </div>
-      </Section>
+            ))}
+          </div>
+        </Section>
+      )}
 
-      <section className="mt-16 rounded-3xl bg-cream px-5 py-8 text-center">
-        <h2 className="font-heading text-2xl font-bold">Share your character</h2>
-        <p className="mt-2 text-gray">Your friends will want to know theirs.</p>
-        {/* eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image */}
-        <img
-          src={`/api/character/card/${view.id}`}
-          alt={`My Chinese character card: ${c.char}`}
-          loading="lazy"
-          className="mx-auto mt-6 aspect-[9/16] w-full max-w-[220px] rounded-3xl bg-paper shadow-2xl shadow-black/15"
-        />
-        <div className="mt-6">
-          <ShareButton id={view.id} char={c.char} decode={c.decode} />
-        </div>
-      </section>
+      {owner ? (
+        <Reveal className="mt-16">
+          <section className="rounded-3xl border border-gray-light/60 bg-white px-6 py-8 text-center shadow-lg shadow-black/5">
+            <h2 className="font-heading text-2xl font-bold">Share your reading</h2>
+            <p className="mt-2 text-gray">Save your card or send your whole reading.</p>
+            {/* eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image */}
+            <img
+              src={`/api/character/card/${view.id}`}
+              alt={`My Chinese character card: ${c.char}`}
+              loading="lazy"
+              className="mx-auto mt-6 aspect-[9/16] w-full max-w-[240px] rounded-2xl shadow-xl shadow-black/15"
+            />
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <a
+                href={`/api/character/card/${view.id}`}
+                download
+                className="flex items-center justify-center rounded-2xl border-2 border-ink px-4 py-4 text-base font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+              >
+                Download &darr;
+              </a>
+              <ShareButton
+                id={view.id}
+                char={c.char}
+                decode={c.decode}
+                url={owner.shareUrl}
+                text={`My Chinese character reading: ${c.char}, ${c.meaning}. “${c.decode}” What's yours?`}
+                label="Share"
+                compact
+              />
+            </div>
+          </section>
+        </Reveal>
+      ) : (
+        <section className="mt-16 rounded-3xl bg-ink px-5 py-8 text-center text-paper">
+          <h2 className="font-heading text-2xl font-bold">
+            {mode.kind === "example" ? "Get your own reading" : "What’s your Chinese character?"}
+          </h2>
+          <p className="mt-2 text-paper/70">Your birthday and four quick taps. Under a minute.</p>
+          <Link
+            href={mode.kind === "example" && mode.backToId ? `/character/r/${mode.backToId}` : "/character"}
+            className="cta-button mt-6 inline-block w-full rounded-2xl bg-red px-8 py-4 text-lg font-medium text-white"
+          >
+            {mode.kind === "example" && mode.backToId ? "Back to my result" : "Find my character"}
+          </Link>
+        </section>
+      )}
 
       <p className="mt-10 text-center text-[11px] leading-relaxed text-gray/80">
         Your animal and element come from the Chinese zodiac for your birth year. Your character is matched to your answers.{" "}

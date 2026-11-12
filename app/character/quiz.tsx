@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { track } from "@vercel/analytics";
 import { QUESTIONS } from "@/lib/character/content/questions";
 import { encodeResultId } from "@/lib/character/encode";
-import { EXAMPLE_CARDS } from "@/lib/character/example";
+import { EXAMPLE_CARDS, SHUFFLE_CHARS } from "@/lib/character/example";
 import { scoreCharacter } from "@/lib/character/scoring";
 import { getZodiac, MAX_BIRTH_YEAR, MIN_BIRTH_YEAR } from "@/lib/character/zodiac";
 
@@ -53,8 +53,11 @@ export function Quiz() {
     const { animal, element } = getZodiac(b.y, b.m, b.d);
     const id = encodeResultId(scoreCharacter(next, b), animal, element);
     track("quiz_complete", { id });
+    const url = `/character/r/${id}?a=${next.join("")}`;
+    router.prefetch(url);
     setStep("done");
-    router.push(`/character/r/${id}`);
+    // Let the shuffle play briefly before revealing the result.
+    setTimeout(() => router.push(url), 1300);
   }
 
   if (step === "hook") {
@@ -124,7 +127,7 @@ export function Quiz() {
   if (typeof step === "number") {
     const q = QUESTIONS[step];
     return (
-      <section className="mx-auto w-full max-w-md">
+      <section key={step} className="anim-slide mx-auto w-full max-w-md">
         <Progress at={step + 1} />
         <h2 className="mt-8 font-heading text-2xl font-bold leading-snug">{q.prompt}</h2>
         <div className="mt-6 flex flex-col gap-3">
@@ -145,9 +148,23 @@ export function Quiz() {
 
   return (
     <section className="mx-auto w-full max-w-md text-center" aria-live="polite">
-      <p className="quiz-char text-6xl text-red animate-pulse" aria-hidden="true">字</p>
-      <p className="mt-6 text-gray">Reading your character…</p>
+      <Shuffle />
+      <p className="mt-6 text-gray">Finding your character…</p>
     </section>
+  );
+}
+
+function Shuffle() {
+  const chars = [...SHUFFLE_CHARS];
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((n) => (n + 1) % chars.length), 70);
+    return () => clearInterval(t);
+  }, [chars.length]);
+  return (
+    <div className="mx-auto flex h-40 w-32 items-center justify-center rounded-2xl bg-white shadow-xl shadow-black/10" aria-hidden="true">
+      <span className="quiz-char text-7xl leading-none text-red">{chars[i]}</span>
+    </div>
   );
 }
 

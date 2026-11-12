@@ -37,14 +37,14 @@ export default async function ResultPage({ params }: Props) {
       <section className="flex w-full max-w-md flex-col items-center text-center">
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">Your Chinese character</p>
 
-        <p className="quiz-char mt-3 text-[6.5rem] leading-none text-red" lang="zh">{c.char}</p>
-        <p className="mt-2 text-lg text-ink">
+        <p className="anim-ink quiz-char mt-3 text-[6.5rem] leading-none text-red" lang="zh">{c.char}</p>
+        <p className="anim-rise mt-2 text-lg text-ink" style={{ animationDelay: "0.5s" }}>
           {c.pinyin} <span className="text-gray">·</span> {c.meaning}
         </p>
 
-        <p className="mt-4 font-heading text-[1.35rem] font-bold leading-snug">&ldquo;{c.decode}&rdquo;</p>
+        <p className="anim-rise mt-4 font-heading text-[1.35rem] font-bold leading-snug" style={{ animationDelay: "0.75s" }}>&ldquo;{c.decode}&rdquo;</p>
 
-        <p className="mt-3 text-sm text-gold">
+        <p className="anim-rise mt-3 text-sm text-gold" style={{ animationDelay: "1s" }}>
           {cap(element.element)} {cap(animal.animal)}{" "}
           <span className="quiz-char" lang="zh">{element.zh}{animal.zh}</span>
           <span className="text-gray"> · by birth year</span>
@@ -54,11 +54,17 @@ export default async function ResultPage({ params }: Props) {
         <button
           disabled
           title="Checkout coming soon"
-          className="cta-button mt-6 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white disabled:cursor-not-allowed"
+          className="anim-rise cta-button mt-6 w-full rounded-2xl bg-red px-8 py-5 text-lg font-medium text-white disabled:cursor-not-allowed"
+          style={{ animationDelay: "1.25s" }}
         >
           Unlock your full reading — {priceLabel}
         </button>
-        <p className="mt-2 text-xs text-gray">What {c.char} says about you, your animal and element, plus 3 wallpapers.</p>
+        <p className="mt-2 text-xs text-gray">
+          What {c.char} says about you, your animal and element, plus 3 wallpapers.{" "}
+          <Link href={`/character/reading/example?from=${id}`} className="font-medium text-ink underline underline-offset-2">
+            See an example
+          </Link>
+        </p>
 
         <div className="mt-4">
           <ShareButton id={id} char={c.char} decode={c.decode} variant="link" />

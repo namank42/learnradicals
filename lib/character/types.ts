@@ -37,5 +37,6 @@ export type ElementProfile = {
   profile: string; // paid, 40–80 words
 };
 
-export type QuizAnswer = { label: string; weights: Record<string, number> };
+/** reflect: how the answer is quoted back in the paid reading, e.g. "stay in with a book and a blanket". */
+export type QuizAnswer = { label: string; reflect: string; weights: Record<string, number> };
 export type QuizQuestion = { id: string; prompt: string; answers: QuizAnswer[] };

@@ -64,6 +64,47 @@ export function ResultCard({
     );
   }
 
+  if (format === "story") {
+    // Framed card on a cream ground: label top, character group centred on one 48px rhythm, footer pinned bottom.
+    const GAP = 48;
+    return (
+      <div style={{ display: "flex", width: "100%", height: "100%", background: C.cream, padding: 64, fontFamily: "Quiz Serif" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            height: "100%",
+            background: C.paper,
+            borderRadius: 56,
+            border: `3px solid ${C.gold}33`,
+            padding: "110px 90px 100px",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ display: "flex", fontSize: 36, color: C.gray, letterSpacing: 8 }}>MY CHINESE CHARACTER</div>
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", fontSize: 500, lineHeight: 1, color: C.red }}>{c.char}</div>
+            <div style={{ display: "flex", fontSize: 58, color: C.ink, marginTop: GAP }}>{`${c.pinyin} · ${c.meaning}`}</div>
+            <div style={{ display: "flex", width: 120, height: 4, background: C.gold, marginTop: GAP, borderRadius: 2 }} />
+            <div style={{ display: "flex", fontSize: 60, color: C.ink, marginTop: GAP, lineHeight: 1.35, maxWidth: 820, justifyContent: "center" }}>
+              {c.decode}
+            </div>
+            <div style={{ display: "flex", fontSize: 46, color: C.gold, marginTop: GAP }}>{yearLine}</div>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", fontSize: 44, color: C.ink }}>What&apos;s yours?</div>
+            <div style={{ display: "flex", fontSize: 34, color: C.gray, marginTop: 14 }}>learnradicals.com/character</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const tall = format === "wallpaper";
   // Wallpapers come in three looks: 1 light, 2 dark, 3 red.
   const theme =
@@ -72,7 +113,7 @@ export function ResultCard({
       : variant === 2
         ? { bg: C.ink, char: C.red, text: C.paper, accent: "#d9a74a", muted: "#a8a29a" }
         : { bg: C.red, char: C.paper, text: C.paper, accent: "#f3d9a4", muted: "#f1c7c1" };
-  const showDecode = format === "story" || variant === 2;
+  const showDecode = variant === 2;
   const showPair = format === "wallpaper" && variant === 3;
 
   return (
@@ -90,10 +131,7 @@ export function ResultCard({
         textAlign: "center",
       }}
     >
-      {format === "story" && (
-        <div style={{ display: "flex", fontSize: 40, color: C.gray, letterSpacing: 6 }}>MY CHINESE CHARACTER</div>
-      )}
-      <div style={{ display: "flex", fontSize: tall ? 620 : 560, lineHeight: 1, color: theme.char, marginTop: format === "story" ? 40 : 0 }}>
+      <div style={{ display: "flex", fontSize: tall ? 620 : 560, lineHeight: 1, color: theme.char, marginTop: 0 }}>
         {c.char}
       </div>
       <div style={{ display: "flex", fontSize: tall ? 56 : 60, color: theme.text, marginTop: 30 }}>{`${c.pinyin} · ${c.meaning}`}</div>
@@ -106,13 +144,6 @@ export function ResultCard({
         <div style={{ display: "flex", alignItems: "center", marginTop: 80, fontSize: 60, color: theme.muted }}>
           <span>with</span>
           <span style={{ fontSize: 200, color: theme.accent, marginLeft: 40 }}>{pair.char}</span>
-        </div>
-      )}
-      {format === "story" && (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ display: "flex", fontSize: 50, color: C.gold, marginTop: 70 }}>{yearLine}</div>
-          <div style={{ display: "flex", fontSize: 38, color: C.gray, marginTop: 120 }}>What&apos;s yours?</div>
-          <div style={{ display: "flex", fontSize: 38, color: C.gray, marginTop: 10 }}>learnradicals.com/character</div>
         </div>
       )}
     </div>

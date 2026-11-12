@@ -30,3 +30,35 @@
 main.quiz-main {
   padding-bottom: 1.5rem;
 }
+
+/* ---------- Motion (all disabled under prefers-reduced-motion) ---------- */
+@keyframes quiz-ink-in {
+  from { opacity: 0; transform: scale(1.35); filter: blur(14px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes quiz-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes quiz-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  70% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes quiz-slide-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+.anim-ink { animation: quiz-ink-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.anim-rise { animation: quiz-rise 0.6s ease-out both; }
+.anim-pop { animation: quiz-pop 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+.anim-slide { animation: quiz-slide-in 0.35s ease-out both; }
+
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease-out, transform 0.7s ease-out; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-ink, .anim-rise, .anim-pop, .anim-slide { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}

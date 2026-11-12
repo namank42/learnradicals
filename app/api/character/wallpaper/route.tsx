@@ -4,13 +4,17 @@ import { getResult } from "@/lib/character";
 import { getReadingAccess } from "@/lib/character/access";
 import { CARD_SIZES, ResultCard, ogFonts } from "@/lib/character/og";
 
-/** Paid wallpapers: ?session_id=…&v=1|2|3 (or ?preview=<id> outside production). */
+/** Paid wallpapers: ?session_id=…&v=1|2|3, the public example (?example=1), or ?preview=<id> outside production. */
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams;
   const v = Number(q.get("v"));
   if (v !== 1 && v !== 2 && v !== 3) return Response.json({ error: "Bad variant" }, { status: 400 });
 
-  const access = await getReadingAccess({ sessionId: q.get("session_id"), previewId: q.get("preview") });
+  const access = await getReadingAccess({
+    sessionId: q.get("session_id"),
+    previewId: q.get("preview"),
+    example: q.get("example") === "1",
+  });
   const view = access && getResult(access.resultId);
   if (!view) return Response.json({ error: "Not unlocked" }, { status: 403 });
 

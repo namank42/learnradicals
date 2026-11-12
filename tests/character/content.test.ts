@@ -119,3 +119,11 @@ describe("hook example cards", () => {
     expect(c.parts.map((p) => p.char)).toEqual(e.parts);
   });
 });
+
+import { SHUFFLE_CHARS } from "@/lib/character/example";
+
+describe("shuffle characters", () => {
+  it("match the 24 soul characters exactly", () => {
+    expect([...SHUFFLE_CHARS].sort()).toEqual(CHARACTERS.map((c) => c.char).sort());
+  });
+});

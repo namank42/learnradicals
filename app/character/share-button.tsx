@@ -3,16 +3,26 @@
 import { useEffect, useState } from "react";
 import { track } from "@vercel/analytics";
 
-type Props = { id: string; char: string; decode: string; variant?: "button" | "link" };
+type Props = {
+  id: string;
+  char: string;
+  decode: string;
+  variant?: "button" | "link";
+  url?: string;
+  text?: string;
+  label?: string;
+  /** Smaller primary button for side-by-side layouts. */
+  compact?: boolean;
+};
 
 /**
  * One tap: phones get the native share sheet with the Story card image attached;
  * browsers without it get the link copied (or shown, if the clipboard is blocked).
  */
-export function ShareButton({ id, char, decode, variant = "button" }: Props) {
+export function ShareButton({ id, char, decode, variant = "button", url, text: textOverride, label = "Share my character", compact = false }: Props) {
   const cardUrl = `/api/character/card/${id}`;
-  const pageUrl = `${process.env.NEXT_PUBLIC_BASE_URL ?? "https://learnradicals.com"}/character/r/${id}`;
-  const text = `My Chinese character is ${char}: “${decode}” What's yours?`;
+  const pageUrl = url ?? `${process.env.NEXT_PUBLIC_BASE_URL ?? "https://learnradicals.com"}/character/r/${id}`;
+  const text = textOverride ?? `My Chinese character is ${char}: “${decode}” What's yours?`;
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "copied" | "manual">("idle");
 
@@ -61,14 +71,14 @@ export function ShareButton({ id, char, decode, variant = "button" }: Props) {
     <>
       {variant === "link" ? (
         <button onClick={share} className="text-sm font-medium text-gray underline-offset-4 hover:text-ink hover:underline">
-          {status === "copied" ? "Link copied!" : "Share my character \u2197"}
+          {status === "copied" ? "Link copied!" : `${label} \u2197`}
         </button>
       ) : (
         <button
           onClick={share}
-          className="cta-button w-full rounded-2xl bg-ink px-8 py-4 text-lg font-medium text-paper"
+          className={`cta-button w-full rounded-2xl bg-ink font-medium text-paper ${compact ? "px-4 py-4 text-base" : "px-8 py-4 text-lg"}`}
         >
-          {status === "copied" ? "Link copied!" : "Share my character"}
+          {status === "copied" ? "Link copied!" : label}
         </button>
       )}
       {status === "manual" && (
