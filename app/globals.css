@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Tailwind v4 gives buttons the default cursor; restore the hand on anything clickable. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
 /* Self-hosted Noto Serif SC (subset: only characters used on page) */
 @font-face {
   font-family: "Noto Serif SC";
