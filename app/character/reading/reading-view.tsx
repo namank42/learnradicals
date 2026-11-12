@@ -29,9 +29,35 @@ function Section({
   );
 }
 
+/** Big "go back and unlock yours" call to action, repeated through the example reading. */
+function ExampleCta({ mode }: { mode: Extract<ReadingMode, { kind: "example" }> }) {
+  const back = mode.backTo;
+  return (
+    <Reveal className="mt-12">
+      <div className="rounded-3xl bg-red px-6 py-7 text-center text-white">
+        <p className="font-heading text-xl font-bold leading-snug">
+          {back ? (
+            <>
+              Your character is <span className="quiz-char" lang="zh">{back.char}</span>. Read all of yours.
+            </>
+          ) : (
+            "Find your own character and read all of it."
+          )}
+        </p>
+        <Link
+          href={back ? `/character/r/${back.id}` : "/character"}
+          className="cta-button mt-5 block w-full rounded-2xl bg-white px-6 py-4 text-lg font-semibold text-red"
+        >
+          {back ? `Unlock my reading — ${mode.readingPrice}` : "Find my character"}
+        </Link>
+      </div>
+    </Reveal>
+  );
+}
+
 export type ReadingMode =
   | { kind: "owner"; wallpaperQuery: string; hasKit: boolean; shareUrl: string }
-  | { kind: "example"; backToId: string | null }
+  | { kind: "example"; backTo: { id: string; char: string } | null; readingPrice: string }
   | { kind: "shared" };
 
 export function ReadingView({
@@ -148,6 +174,8 @@ export function ReadingView({
         <p className="text-[17px] leading-relaxed text-ink">{c.money}</p>
       </Section>
 
+      {mode.kind === "example" && <ExampleCta mode={mode} />}
+
       <Section eyebrow="For hard days">
         <blockquote className="rounded-2xl border-l-4 border-l-red bg-white px-5 py-5 font-heading text-xl font-bold leading-snug shadow-md shadow-black/5">
           {c.hardDays}
@@ -181,7 +209,7 @@ export function ReadingView({
 
       <Section eyebrow="Your 2027" title={<>The Year of the Fire Goat <span className="quiz-char text-gold" lang="zh">羊</span></>}>
         <p className="text-[17px] leading-relaxed text-ink">{goatYear}</p>
-        {mode.kind !== "shared" && (
+        {owner && (
           <div className="mt-5 rounded-2xl bg-cream px-5 py-5">
             {owner?.hasKit ? (
               <>
@@ -219,7 +247,7 @@ export function ReadingView({
                 <p className="mt-2 text-center text-[11px] uppercase tracking-[0.18em] text-gray/80">Preview</p>
                 {/* Kit-only checkout is wired in Task 6. */}
                 <button disabled className="mt-4 w-full rounded-2xl bg-ink px-6 py-4 font-medium text-paper disabled:cursor-not-allowed">
-                  {mode.kind === "example" ? `Add it to your reading for ${kitPrice}` : `Get the kit — ${kitPrice}`}
+                  {`Get the kit — ${kitPrice}`}
                 </button>
               </>
             )}
@@ -295,23 +323,29 @@ export function ReadingView({
           </section>
         </Reveal>
       ) : (
-        <section className="mt-12 rounded-3xl bg-ink px-5 py-8 text-center text-paper">
-          <h2 className="font-heading text-2xl font-bold">
-            {mode.kind === "example" ? "Get your own reading" : "What’s your Chinese character?"}
-          </h2>
-          <p className="mt-2 text-paper/70">Your birthday and four quick taps. Under a minute.</p>
-          <Link
-            href={mode.kind === "example" && mode.backToId ? `/character/r/${mode.backToId}` : "/character"}
-            className="cta-button mt-6 inline-block w-full rounded-2xl bg-red px-8 py-4 text-lg font-medium text-white"
-          >
-            {mode.kind === "example" && mode.backToId ? "Back to my result" : "Find my character"}
-          </Link>
-        </section>
+        mode.kind === "example" ? (
+          <ExampleCta mode={mode} />
+        ) : (
+          <section className="mt-12 rounded-3xl bg-ink px-5 py-8 text-center text-paper">
+            <h2 className="font-heading text-2xl font-bold">What&rsquo;s your Chinese character?</h2>
+            <p className="mt-2 text-paper/70">Your birthday and four quick taps. Under a minute.</p>
+            <Link
+              href="/character"
+              className="cta-button mt-6 inline-block w-full rounded-2xl bg-red px-8 py-4 text-lg font-medium text-white"
+            >
+              Find my character
+            </Link>
+          </section>
+        )
       )}
 
-      <p className="mt-12 text-center text-[11px] leading-relaxed text-gray/80">
-        Your animal and element come from the Chinese zodiac for your birth year. Your character is matched to your answers.{" "}
-        <Link href="/character" className="underline hover:text-ink">Take the quiz again</Link>
+      <p className="mx-auto mt-12 max-w-xs text-balance text-center text-[11px] leading-relaxed text-gray/80">
+        Your animal and element come from the Chinese zodiac for your birth year. Your character is matched to your answers.
+      </p>
+      <p className="mt-2 text-center">
+        <Link href="/character" className="text-[11px] text-gray/80 underline underline-offset-2 hover:text-ink">
+          Take the quiz again
+        </Link>
       </p>
     </article>
   );
