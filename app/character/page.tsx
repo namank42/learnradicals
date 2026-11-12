@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function CharacterQuizPage() {
   return (
-    <main className="min-h-[100dvh] px-4 py-12 md:py-20">
+    <main className="flex min-h-[100dvh] justify-center px-4 py-12 md:items-center md:py-20">
       <Quiz />
     </main>
   );

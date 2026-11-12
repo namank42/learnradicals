@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/download": ["./private/**/*"],
+    "/character/**/*": ["./assets/fonts/**/*"],
+    "/api/character/**/*": ["./assets/fonts/**/*"],
   },
   async headers() {
     return [

@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getResult } from "@/lib/character";
 import { readingPriceKey } from "@/lib/character/pricing";
+import { SaveCardLink } from "./save-card-link";
 import "../../character.css";
 
 type Props = { params: Promise<{ id: string }> };
@@ -59,10 +60,12 @@ export default async function ResultPage({ params }: Props) {
           <p className="mt-1 text-sm text-gray">By birth year. {animal.badge} {element.badge}</p>
         </div>
 
+        <SaveCardLink id={id} />
+
         {/* Unlock is wired to Stripe in Task 6. */}
         <button
           disabled
-          className="mt-8 w-full cursor-not-allowed rounded-2xl bg-red/60 px-8 py-5 text-lg font-medium text-white"
+          className="mt-4 w-full cursor-not-allowed rounded-2xl bg-red/60 px-8 py-5 text-lg font-medium text-white"
         >
           Unlock your full reading — {priceLabel}
         </button>

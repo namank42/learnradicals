@@ -58,7 +58,7 @@ export function Quiz() {
 
   if (step === "hook") {
     return (
-      <section className="mx-auto max-w-md text-center">
+      <section className="mx-auto w-full max-w-md text-center">
         <p className="quiz-char text-7xl text-red" aria-hidden="true">字</p>
         <h1 className="mt-6 font-heading text-[clamp(2rem,8vw,2.75rem)] font-bold leading-[1.05] tracking-tight">
           Every Chinese character hides a story. <span className="text-red">Which one is yours?</span>
@@ -76,7 +76,7 @@ export function Quiz() {
 
   if (step === "birth") {
     return (
-      <section className="mx-auto max-w-md">
+      <section className="mx-auto w-full max-w-md">
         <Progress at={0} />
         <h2 className="mt-8 font-heading text-2xl font-bold">When&rsquo;s your birthday?</h2>
         <p className="mt-2 text-gray">It sets your zodiac animal and year element.</p>
@@ -109,7 +109,7 @@ export function Quiz() {
   if (typeof step === "number") {
     const q = QUESTIONS[step];
     return (
-      <section className="mx-auto max-w-md">
+      <section className="mx-auto w-full max-w-md">
         <Progress at={step + 1} />
         <h2 className="mt-8 font-heading text-2xl font-bold leading-snug">{q.prompt}</h2>
         <div className="mt-6 flex flex-col gap-3">
@@ -129,7 +129,7 @@ export function Quiz() {
   }
 
   return (
-    <section className="mx-auto max-w-md text-center" aria-live="polite">
+    <section className="mx-auto w-full max-w-md text-center" aria-live="polite">
       <p className="quiz-char text-6xl text-red animate-pulse" aria-hidden="true">字</p>
       <p className="mt-6 text-gray">Reading your character…</p>
     </section>
