@@ -15,7 +15,7 @@ Docs digest: `docs/superpowers/research/2026-11-12-character-quiz-docs.md`
 - Direct URL `learnradicals.com/character`; no `/t/` short link. Existing attribution middleware still records UTM/referrer.
 - All reading content is pre-written and reviewed. Nothing is generated at purchase time.
 - Readings are labeled as poetic readings ("the way Luna reads it"), never as etymology or history.
-- Honest framing (approved Nov 12): the zodiac animal and **year element** come from the birth year per Chinese tradition (a simplification of Four Pillars, so always say "year element", never "your element"). Animal traits are folklore ("tradition says…"). The soul character is a personality-quiz match, not a Chinese tradition. Every result shows: "Your animal and element come from the Chinese zodiac. Your character is Luna's match for your answers — a poetic reading, just for fun."
+- Honest framing (approved Nov 12): the zodiac animal and **year element** come from the birth year per Chinese tradition (a simplification of Four Pillars, so always say "year element", never "your element"). Animal traits are folklore ("tradition says…"). The soul character is a personality-quiz match, not a Chinese tradition. Every result shows: "Your animal and element come from the Chinese zodiac. Your character is matched from your answers — a poetic reading, just for fun." The quiz is branded "Chinese character quiz", not "Luna's" (Nov 12)
 
 ## User flow
 

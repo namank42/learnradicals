@@ -11,3 +11,16 @@
   font-family: "Quiz Serif", var(--font-cjk);
   font-weight: 700;
 }
+
+@keyframes quiz-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.quiz-float {
+  animation: quiz-float 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-float { animation: none; }
+}

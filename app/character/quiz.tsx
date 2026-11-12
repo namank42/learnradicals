@@ -5,7 +5,7 @@ import { useState } from "react";
 import { track } from "@vercel/analytics";
 import { QUESTIONS } from "@/lib/character/content/questions";
 import { encodeResultId } from "@/lib/character/encode";
-import { EXAMPLE_RESULT as EXAMPLE } from "@/lib/character/example";
+import { EXAMPLE_CARDS } from "@/lib/character/example";
 import { scoreCharacter } from "@/lib/character/scoring";
 import { getZodiac, MAX_BIRTH_YEAR, MIN_BIRTH_YEAR } from "@/lib/character/zodiac";
 
@@ -60,7 +60,8 @@ export function Quiz() {
   if (step === "hook") {
     return (
       <section className="mx-auto w-full max-w-md text-center">
-        <p className="text-sm font-medium uppercase tracking-widest text-gray">Luna&rsquo;s character quiz</p>
+        <CardFan />
+        <p className="mt-8 text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">Chinese character quiz</p>
         <h1 className="mt-4 font-heading text-[clamp(2rem,8vw,2.75rem)] font-bold leading-[1.05] tracking-tight">
           Every Chinese character hides a story. <span className="text-red">Which one is yours?</span>
         </h1>
@@ -75,17 +76,6 @@ export function Quiz() {
         </button>
         <p className="mt-3 text-sm text-gray">Free result &middot; No sign-up &middot; Under a minute</p>
 
-        <figure className="mt-10 rounded-2xl border-l-4 border-l-red bg-white px-5 py-5 text-left shadow-lg shadow-black/5">
-          <figcaption className="text-xs font-medium uppercase tracking-widest text-gray">Example result</figcaption>
-          <div className="mt-3 flex items-center gap-4">
-            <span className="quiz-char text-6xl leading-none text-red" lang="zh">{EXAMPLE.char}</span>
-            <div>
-              <p className="text-sm text-gray">{EXAMPLE.pinyin} &middot; {EXAMPLE.meaning}</p>
-              <p className="mt-1 font-heading text-lg font-bold leading-snug">{EXAMPLE.decode}</p>
-              <p className="mt-1 text-sm text-gold">{EXAMPLE.year}</p>
-            </div>
-          </div>
-        </figure>
 
         <p className="mt-6 text-sm text-gray">
           From{" "}
@@ -168,6 +158,38 @@ function Progress({ at }: { at: number }) {
       {Array.from({ length: total }, (_, i) => (
         <span key={i} className={`h-1.5 flex-1 rounded-full ${i <= at ? "bg-red" : "bg-gray-light/60"}`} />
       ))}
+    </div>
+  );
+}
+
+const FAN = [
+  { rotate: -10, x: -96, y: 16, z: 1, delay: "0s" },
+  { rotate: 0, x: 0, y: 0, z: 2, delay: "0.6s" },
+  { rotate: 10, x: 96, y: 16, z: 1, delay: "1.2s" },
+];
+
+function CardFan() {
+  return (
+    <div className="relative mx-auto h-[190px] w-full max-w-[320px]" aria-hidden="true">
+      {EXAMPLE_CARDS.map((card, i) => {
+        const f = FAN[i];
+        return (
+          <div
+            key={card.slug}
+            className="absolute left-1/2 top-0"
+            style={{ transform: `translateX(calc(-50% + ${f.x}px)) translateY(${f.y}px) rotate(${f.rotate}deg)`, zIndex: f.z }}
+          >
+            <div
+              className="quiz-float flex h-[168px] w-[118px] flex-col items-center justify-center rounded-2xl border border-gray-light/60 bg-white shadow-xl shadow-black/10"
+              style={{ animationDelay: f.delay }}
+            >
+              <span className="quiz-char text-[64px] leading-none text-red">{card.char}</span>
+              <span className="mt-2 text-[10px] font-medium uppercase tracking-[0.18em] text-gray">{card.meaning}</span>
+              <span className="quiz-char mt-1 text-xs text-gold">{card.parts[0]} + {card.parts[1]}</span>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

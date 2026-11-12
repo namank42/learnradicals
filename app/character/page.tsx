@@ -3,7 +3,7 @@ import { Quiz } from "./quiz";
 import "./character.css";
 
 export const metadata: Metadata = {
-  title: "What's Your Chinese Character? — Luna",
+  title: "What's Your Chinese Character? A Chinese Character Quiz",
   description:
     "Four quick taps and your birthday. Find the Chinese character that reads like you, plus your zodiac animal and year element.",
   alternates: { canonical: "/character" },

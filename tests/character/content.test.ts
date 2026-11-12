@@ -108,16 +108,14 @@ describe("copy rules", () => {
   });
 });
 
-import { EXAMPLE_RESULT } from "@/lib/character/example";
+import { EXAMPLE_CARDS } from "@/lib/character/example";
 
-describe("hook example", () => {
-  it("matches the real content entry", () => {
-    const c = CHARACTERS.find((x) => x.slug === EXAMPLE_RESULT.slug)!;
-    expect({ char: c.char, pinyin: c.pinyin, meaning: c.meaning, decode: c.decode }).toEqual({
-      char: EXAMPLE_RESULT.char,
-      pinyin: EXAMPLE_RESULT.pinyin,
-      meaning: EXAMPLE_RESULT.meaning,
-      decode: EXAMPLE_RESULT.decode,
-    });
+describe("hook example cards", () => {
+  it.each(EXAMPLE_CARDS.map((e) => [e.slug, e] as const))("%s matches the real entry", (_s, e) => {
+    const c = CHARACTERS.find((x) => x.slug === e.slug)!;
+    expect(c).toBeDefined();
+    expect(c.char).toBe(e.char);
+    expect(c.meaning).toBe(e.meaning);
+    expect(c.parts.map((p) => p.char)).toEqual(e.parts);
   });
 });
