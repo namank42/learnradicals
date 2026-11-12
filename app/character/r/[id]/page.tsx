@@ -12,6 +12,7 @@ import "../../character.css";
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ a?: string }> };
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const view = getResult((await params).id);
@@ -53,6 +54,12 @@ export default async function ResultPage({ params, searchParams }: Props) {
           <span className="quiz-char" lang="zh">{element.zh}{animal.zh}</span>
           <span className="text-gray"> · by birth year</span>
         </p>
+        <div className="anim-rise mt-2 space-y-1 text-balance text-[15px] leading-snug" style={{ animationDelay: "0.6s" }}>
+          <p className="text-ink">Tradition says you&rsquo;re {lower(animal.badge)}</p>
+          <p className="text-gray">
+            <span className="quiz-char text-red" lang="zh">{element.zh}</span> {cap(element.element)}: {lower(element.badge)}
+          </p>
+        </div>
 
         <UnlockSheet
           id={id}
@@ -63,7 +70,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
           style={{ animationDelay: "0.7s" }}
         />
         <p className="mt-3 text-balance text-xs leading-relaxed text-gray">
-          What {c.char} says about you, in love and with money, plus 3 wallpapers.
+          Your full {cap(element.element)} {cap(animal.animal)} profile, what {c.char} says about you in love and money, plus 3 wallpapers.
         </p>
         <Link
           href={`/character/reading/example?from=${id}`}
