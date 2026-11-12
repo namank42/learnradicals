@@ -59,5 +59,5 @@ export function accessQuery(access: ReadingAccess): string {
   if (access.example) return "example=1";
   return access.sessionId
     ? `session_id=${encodeURIComponent(access.sessionId)}`
-    : `preview=${encodeURIComponent(access.resultId)}`;
+    : `preview=${encodeURIComponent(access.resultId)}${access.answers ? `&a=${access.answers.join("")}` : ""}`;
 }

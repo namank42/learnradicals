@@ -55,6 +55,26 @@ function ExampleCta({ mode }: { mode: Extract<ReadingMode, { kind: "example" }> 
   );
 }
 
+function KitPreviews({ animal }: { animal: string }) {
+  return (
+    <>
+      <div className="mt-4 grid grid-cols-3 gap-2">
+        {[1, 2, 3].map((p) => (
+          // eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image
+          <img
+            key={p}
+            src={`/api/character/kit-preview?animal=${animal}&p=${p}`}
+            alt={["Planner cover", "January planner page", "Printable art"][p - 1]}
+            loading="lazy"
+            className="aspect-[620/877] w-full rounded-lg bg-white shadow-md shadow-black/10"
+          />
+        ))}
+      </div>
+      <p className="mt-2 text-center text-[11px] uppercase tracking-[0.18em] text-gray/80">Preview</p>
+    </>
+  );
+}
+
 export type ReadingMode =
   | { kind: "owner"; wallpaperQuery: string; hasKit: boolean; shareUrl: string }
   | { kind: "example"; backTo: { id: string; char: string } | null; readingPrice: string }
@@ -108,11 +128,11 @@ export function ReadingView({
         {owner && (
           <div className="mx-auto mt-6 grid max-w-xs grid-cols-2 gap-3">
             <a
-              href={`/api/character/card/${view.id}`}
+              href={`/api/character/reading-pdf?${owner.wallpaperQuery}`}
               download
-              className="flex items-center justify-center rounded-2xl border-2 border-ink px-4 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+              className="flex items-center justify-center rounded-2xl border-2 border-ink px-3 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
             >
-              Download card &darr;
+              Reading (PDF) &darr;
             </a>
             <a
               href="#wallpapers"
@@ -217,6 +237,7 @@ export function ReadingView({
                 <p className="mt-1 text-sm text-gray">
                   20 pages: your {cap(animal.animal)} edition cover, your lucky guide, 12 planner months and 6 printable art pieces.
                 </p>
+                <KitPreviews animal={animal.animal} />
                 <a
                   href={`/api/character/kit?${owner.wallpaperQuery}`}
                   download
@@ -232,19 +253,7 @@ export function ReadingView({
                   A 20-page digital download: your {cap(animal.animal)} edition planner, your lucky colors, numbers and best
                   matches, 12 months with a character for each, and 6 printable art pieces.
                 </p>
-                <div className="mt-4 grid grid-cols-3 gap-2">
-                  {[1, 2, 3].map((p) => (
-                    // eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image
-                    <img
-                      key={p}
-                      src={`/api/character/kit-preview?animal=${animal.animal}&p=${p}`}
-                      alt={["Planner cover", "January planner page", "Printable art"][p - 1]}
-                      loading="lazy"
-                      className="aspect-[620/877] w-full rounded-lg bg-white shadow-md shadow-black/10"
-                    />
-                  ))}
-                </div>
-                <p className="mt-2 text-center text-[11px] uppercase tracking-[0.18em] text-gray/80">Preview</p>
+                <KitPreviews animal={animal.animal} />
                 {/* Kit-only checkout is wired in Task 6. */}
                 <button disabled className="mt-4 w-full rounded-2xl bg-ink px-6 py-4 font-medium text-paper disabled:cursor-not-allowed">
                   {`Get the kit — ${kitPrice}`}
@@ -293,8 +302,8 @@ export function ReadingView({
       {owner ? (
         <Reveal className="mt-12">
           <section className="text-center">
-            <h2 className="font-heading text-2xl font-bold">Share your reading</h2>
-            <p className="mt-2 text-gray">Save your card or send your whole reading.</p>
+            <h2 className="font-heading text-2xl font-bold">Save &amp; share your reading</h2>
+            <p className="mt-2 text-gray">Keep the whole reading, or send it to a friend.</p>
             {/* eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image */}
             <img
               src={`/api/character/card/${view.id}`}
@@ -304,11 +313,11 @@ export function ReadingView({
             />
             <div className="mt-6 grid grid-cols-2 gap-3">
               <a
-                href={`/api/character/card/${view.id}`}
+                href={`/api/character/reading-pdf?${owner.wallpaperQuery}`}
                 download
-                className="flex items-center justify-center rounded-2xl border-2 border-ink px-4 py-4 text-base font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+                className="flex items-center justify-center rounded-2xl border-2 border-ink px-3 py-4 text-base font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
               >
-                Download &darr;
+                Reading (PDF) &darr;
               </a>
               <ShareButton
                 id={view.id}
@@ -316,10 +325,17 @@ export function ReadingView({
                 decode={c.decode}
                 url={owner.shareUrl}
                 text={`My Chinese character reading: ${c.char}, ${c.meaning}. “${c.decode}” What's yours?`}
-                label="Share"
+                label="Share reading"
                 compact
               />
             </div>
+            <a
+              href={`/api/character/card/${view.id}`}
+              download
+              className="mt-4 inline-block text-sm text-gray underline underline-offset-2 hover:text-ink"
+            >
+              Save card image &darr;
+            </a>
           </section>
         </Reveal>
       ) : (
