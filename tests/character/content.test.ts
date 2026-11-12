@@ -46,6 +46,12 @@ describe("characters", () => {
       expect(w.en.trim()).not.toBe("");
     }
     expect(c.hardDays.length).toBeLessThanOrEqual(140);
+    for (const field of [c.love, c.money]) {
+      expect(words(field)).toBeGreaterThanOrEqual(60);
+      expect(words(field)).toBeLessThanOrEqual(110);
+    }
+    // never predictive or relationship-status / gender assuming
+    expect(`${c.love} ${c.money}`).not.toMatch(/\b(you will (meet|find|get rich|earn)|guaranteed|your (husband|wife|boyfriend|girlfriend)|soulmate is coming)\b/i);
     expect(slugs).toContain(c.pairsWith);
     expect(c.pairsWith).not.toBe(c.slug);
   });

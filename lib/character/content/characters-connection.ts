@@ -20,6 +20,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "Even the moon goes dark some nights. Text one person who knows your real voice. You don't have to explain. Just say hi.",
+    love:
+      `With the people you let close, you love like a second moon. You don't crowd them. You keep them company in the dark and make the quiet feel safe. You give steady attention, the remembered detail, the text at exactly the right hour. What you need back is simple: someone who notices when your light dims and asks twice. Watch the old habit of mirroring. You can match someone's mood so well that they never meet the real you. Whoever you love deserves your actual weather, not just your reflection. Say the true thing first, before "how are you?"`,
+    money:
+      `You treat money the way you treat friendship: something to share. You're first to cover the coffee, split the gas, chip in for the gift. At work, you're the colleague everyone trusts, which often means you do the unpaid glue work: the onboarding, the morale, the extra hour. That light has value, even when nobody sends an invoice for it. Watch for the generous discount you give everyone except yourself. One reflection: look back at last month and notice where your time and money went to keeping other people glowing. Then ask what it would look like to keep a little of that light for you.`,
     pairsWith: "trust",
   },
   {
@@ -41,6 +45,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "Today you can keep just one promise: the one to rest. Your word will still mean everything tomorrow.",
+    love:
+      `You love with your word. The people you let close know that when you say you'll be there, you will. You give reliability: the small promise kept, the call returned, the plan that actually happens. What you need back is the same thing, words that match actions. Mixed signals cost you more than most. The pattern to watch is staying because you promised, even after the other person stopped keeping their half. A promise is a two-person thing. If you're the only one still holding it, you're allowed to set it down gently.`,
+    money:
+      `People trust you with money, and for good reason. You pay on time, you return what you borrow, you remember who covered lunch. At work, your reliability is your currency. Things get done when they're in your hands. The catch is that dependable people often get handed more work, not more pay. You say yes to the extra project because you said you'd help, then quietly absorb the cost. One reflection: make a promise to yourself about your time, the way you would for a client. Write it down. Then keep it with the same care you give everyone else.`,
     pairsWith: "loyalty",
   },
   {
@@ -62,6 +70,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "You don't have to carry the whole thing. Borrow a half for an hour: a friend, a call, a walk next to someone.",
+    love:
+      `You love side by side. With whoever you let close, you're the half that makes the whole thing lighter, the one who says "okay, let's figure it out" and means it. You give presence: company on the walk home, a steady voice on the phone, a shoulder at the hard appointment. What you need back is someone who meets you halfway on purpose. Watch the habit of shaping your week around someone else's plans until your own go missing. Single, dating, or years into something, you were a whole person first. Any love that asks you to stay half is too small for you.`,
+    money:
+      `You do your best work in partnership. You're the one who makes a team run, covers the gap, and picks up the task nobody claimed. That's real value, and it's easy to underprice because it's invisible when things go well. With shared costs and shared decisions, you tend to say "whatever works for you" and quietly take the smaller half. Watch that. Fair is not the same as generous. One reflection: in your next shared decision, at work or anywhere else, name what you need before you agree. Half means half. You're allowed to claim your side of the table.`,
     pairsWith: "endurance",
   },
   {
@@ -83,6 +95,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "Today, put yourself at the center of your own heart. Everyone you love will still be there when you come back.",
+    love:
+      `You keep people at the center of your heart, and they stay there. Whoever you love gets the long version of you: the remembered promise, the defense in a room they're not in, the call ten years later. What you need back is loyalty that moves in both directions. Watch for staying devoted to someone who drifted to the edges of their own heart long ago. Holding on can feel like love when it has quietly become habit. One line to keep: the center of your heart has room for you, too. Being loyal to yourself is not a betrayal of anyone.`,
+    money:
+      `You're loyal at work, too. You stay with the team, the manager, the client who gave you a chance years ago, sometimes long after the deal stopped being fair. You don't shop around. You don't like asking for more, because asking feels like doubting the relationship. That steadiness is a real strength, and it deserves to be valued like one. One reflection: put your own worth at the center for an afternoon. Look at what you give the places you're loyal to, and what they give back. If the balance has tipped, it's okay to say so out loud.`,
     pairsWith: "friend",
   },
   {
@@ -104,6 +120,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "Be the second person to yourself today. Say the kind thing you'd say to a friend, and mean it this time.",
+    love:
+      `For you, love is something that happens between two people, every single day. With the people you let close, you give attention so specific they feel seen: the favorite snack, the check-in before the big meeting, the compliment that lands. What you need back is the chance to receive without apologizing for it. Watch the pattern of always being the one who reaches first, then quietly wondering whether anyone would reach for you. Let them. Kindness only works when it travels both ways. One line to keep: you count as the second person, too.`,
+    money:
+      `You're generous with money and with time. You tip well, you buy the round, you say yes to the favor that eats your Saturday. At work, you're the one who helps the new person and stays late to fix someone else's slides. Kindness is a real skill, and people feel it. The shadow is the quiet discount you give everyone, then the guilt when you charge full price. One reflection: next time you name your rate or your hours, say it the way you'd say it for a friend you were proud of. Then stop talking and let it stand.`,
     pairsWith: "sympathy",
   },
   {
@@ -125,6 +145,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "Your heart bled for everyone else this week. Today it's allowed to bleed a little for you. Rest is not a betrayal.",
+    love:
+      `You love by feeling. Whoever you let close gets a heart that notices the shift in their voice before they say a word. You give comfort without being asked, and you make hard feelings feel allowed. What you need back is someone who asks how you are and waits for the real answer. Watch the pattern of carrying everyone's sadness as if it were yours to fix. You can love deeply without bleeding for every wound. One line to keep: being cared for is not a burden you place on people. It's a gift you let them give.`,
+    money:
+      `You feel money in your body. A friend's money worries can keep you up at night. You'll cover, lend, or pay when someone you love is struggling, often before you've checked in with yourself. At work, you're drawn to roles that help people, and you give emotional labor that never shows up on a pay slip. That care is valuable. It's also exhausting when it's always free. One reflection: notice which costs and tasks leave you drained rather than glad. Those are the places your heart is paying a price no one sees. Guard them a little more gently.`,
     pairsWith: "healing",
   },
   {
@@ -146,6 +170,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "Eat something warm before you try to fix anything. Even your own mind argues less on a full stomach.",
+    love:
+      `You love by making sure everyone is fed. With the people you let close, you're the warm kitchen, the plan for dinner, the soft voice when things get tense. You give peace, and people keep coming back to it. What you need back is room to disagree without it feeling like a war. Watch the pattern of swallowing what you think so the evening stays nice. Unsaid things don't disappear. They come home with you. One line to keep: harmony needs every voice, including yours. A small, honest no keeps the table steadier than a quiet yes.`,
+    money:
+      `You're the one who splits the bill without making it weird, and that says a lot about you and money. You like it fair, calm, and never the cause of a fight. At work, you smooth things over, keep the group happy, and make sure everyone gets credit. Sometimes that means letting the bigger slice go to someone else just to keep the peace. One reflection: think of a money conversation you've been avoiding to keep things easy. Peace that costs you every time isn't harmony. Bring it to the table, ideally over a good meal.`,
     pairsWith: "joy",
   },
   {
@@ -168,6 +196,10 @@ export const CONNECTION: CharacterEntry[] = [
     ],
     hardDays:
       "You are the jade today. Stay under your own roof, wrap yourself up, and treat yourself like something precious.",
+    love:
+      `You love like you're keeping jade under your own roof. Whoever you let close gets protected, remembered, and held with care. You keep the card, you know the favorite mug, you make your space feel safe for them. What you need back is to be treasured the same way, not just appreciated. Watch the pattern of guarding your own softness so carefully that nobody gets to see it. Being precious to someone means letting them hold you, too. One line to keep: you protect what's valuable. Put yourself on that list.`,
+    money:
+      `You know what's valuable, and you protect it. You're careful with money, thoughtful about what comes under your roof, and you'd rather own one good thing than ten cheap ones. You spend easily on the people you love and hesitate when it's for you. At work, you're the one who takes care of the details others overlook, which is worth more than you usually ask for it. One reflection: you price other people's treasure accurately. Try valuing your own time at the same rate, and notice how it changes what you say yes to.`,
     pairsWith: "home",
   },
 ];

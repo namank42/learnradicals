@@ -57,7 +57,7 @@ export function Quiz() {
     router.prefetch(url);
     setStep("done");
     // Let the shuffle play briefly before revealing the result.
-    setTimeout(() => router.push(url), 1300);
+    setTimeout(() => router.push(url), 1100);
   }
 
   if (step === "hook") {
@@ -158,7 +158,7 @@ function Shuffle() {
   const chars = [...SHUFFLE_CHARS];
   const [i, setI] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setI((n) => (n + 1) % chars.length), 70);
+    const t = setInterval(() => setI((n) => (n + 1) % chars.length), 110);
     return () => clearInterval(t);
   }, [chars.length]);
   return (

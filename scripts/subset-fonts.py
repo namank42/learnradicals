@@ -4,7 +4,7 @@ Usage:
   python3 -I scripts/subset-fonts.py <NotoSerifSC-Bold.otf>   # build
   python3 -I scripts/subset-fonts.py --check                  # verify coverage
 
-Collects every CJK character used in lib/character/content and app/character,
+Collects every CJK character used in lib/character, app/character and app/api/character,
 then writes:
   assets/fonts/quiz-serif.otf      (for next/og ImageResponse; satori can't read woff2)
   public/fonts/quiz-serif.woff2    (for the web pages)
@@ -17,7 +17,7 @@ from fontTools import subset
 from fontTools.ttLib import TTFont
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SOURCES = [ROOT / "lib/character/content", ROOT / "app/character"]
+SOURCES = [ROOT / "lib/character", ROOT / "app/character", ROOT / "app/api/character"]
 OTF_OUT = ROOT / "assets/fonts/quiz-serif.otf"
 WOFF2_OUT = ROOT / "public/fonts/quiz-serif.woff2"
 CJK = re.compile(r"[⺀-⿟　-〿㐀-鿿豈-﫿＀-￯]")

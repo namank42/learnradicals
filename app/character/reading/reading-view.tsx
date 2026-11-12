@@ -7,10 +7,20 @@ import { ShareButton } from "../share-button";
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const PREORDER_LINE = "Your full 2027 Goat-year kit is coming — pre-order it below.";
 
-function Section({ eyebrow, title, children }: { eyebrow: string; title?: React.ReactNode; children: React.ReactNode }) {
+function Section({
+  eyebrow,
+  title,
+  id,
+  children,
+}: {
+  eyebrow: string;
+  title?: React.ReactNode;
+  id?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <Reveal className="mt-14">
-      <section>
+    <Reveal className="mt-12">
+      <section id={id} className="scroll-mt-6">
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-gray/80">{eyebrow}</p>
         {title && <h2 className="mt-2 font-heading text-2xl font-bold leading-snug">{title}</h2>}
         <div className="mt-4">{children}</div>
@@ -34,12 +44,12 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
   return (
     <article className="mx-auto w-full max-w-md pb-16 text-left">
       {mode.kind === "example" && (
-        <div className="mb-8 rounded-2xl bg-cream px-4 py-3 text-center text-sm text-ink">
+        <div className="mb-10 rounded-2xl bg-cream px-4 py-3 text-center text-sm text-ink">
           <span className="font-semibold">Example reading.</span> This is exactly what you get for your own character.
         </div>
       )}
       {mode.kind === "shared" && (
-        <div className="mb-8 rounded-2xl bg-cream px-4 py-3 text-center text-sm text-ink">
+        <div className="mb-10 rounded-2xl bg-cream px-4 py-3 text-center text-sm text-ink">
           Someone shared their reading with you. <span className="font-semibold">What&rsquo;s yours?</span>
         </div>
       )}
@@ -58,12 +68,29 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
           {yearName} <span className="quiz-char" lang="zh">{element.zh}{animal.zh}</span>
           <span className="text-gray"> · by birth year</span>
         </p>
+        {owner && (
+          <div className="mx-auto mt-6 grid max-w-xs grid-cols-2 gap-3">
+            <a
+              href={`/api/character/card/${view.id}`}
+              download
+              className="flex items-center justify-center rounded-2xl border-2 border-ink px-4 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+            >
+              Download card &darr;
+            </a>
+            <a
+              href="#wallpapers"
+              className="flex items-center justify-center rounded-2xl border-2 border-ink px-4 py-3 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+            >
+              Wallpapers &darr;
+            </a>
+          </div>
+        )}
       </header>
 
       {/* Parts */}
-      <div className="mt-10 flex items-stretch justify-center gap-2">
+      <div className="mt-12 flex items-stretch justify-center gap-2">
         {c.parts.map((p, i) => (
-          <div key={`${p.char}-${i}`} className="anim-pop flex items-center gap-2" style={{ animationDelay: `${0.8 + i * 0.35}s` }}>
+          <div key={`${p.char}-${i}`} className="anim-pop flex items-center gap-2" style={{ animationDelay: `${0.4 + i * 0.15}s` }}>
             {i > 0 && <span className="text-xl text-gray-light">+</span>}
             <div className="flex w-[5.25rem] flex-col items-center rounded-2xl bg-white px-2 py-4 shadow-md shadow-black/5">
               <span className="quiz-char text-4xl text-ink" lang="zh">{p.char}</span>
@@ -71,7 +98,7 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
             </div>
           </div>
         ))}
-        <div className="anim-pop flex items-center gap-2" style={{ animationDelay: `${0.8 + c.parts.length * 0.35}s` }}>
+        <div className="anim-pop flex items-center gap-2" style={{ animationDelay: `${0.4 + c.parts.length * 0.15}s` }}>
           <span className="text-xl text-gray-light">=</span>
           <div className="flex w-[5.25rem] flex-col items-center rounded-2xl bg-red px-2 py-4 text-white shadow-md shadow-red/20">
             <span className="quiz-char text-4xl" lang="zh">{c.char}</span>
@@ -81,7 +108,7 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
       </div>
 
       {reflection && (
-        <p className="mt-10 rounded-2xl bg-white px-5 py-4 text-[17px] italic leading-relaxed text-ink shadow-md shadow-black/5">
+        <p className="mt-12 rounded-2xl bg-white px-5 py-4 text-[17px] italic leading-relaxed text-ink shadow-md shadow-black/5">
           {reflection}
         </p>
       )}
@@ -100,6 +127,14 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
 
       <Section eyebrow="What you need">
         <p className="text-[17px] leading-relaxed text-ink">{about.need}</p>
+      </Section>
+
+      <Section eyebrow="In love" title="The people you let close">
+        <p className="text-[17px] leading-relaxed text-ink">{c.love}</p>
+      </Section>
+
+      <Section eyebrow="With money & work" title="What you&rsquo;re worth">
+        <p className="text-[17px] leading-relaxed text-ink">{c.money}</p>
       </Section>
 
       <Section eyebrow="For hard days">
@@ -135,26 +170,41 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
 
       <Section eyebrow="Your 2027" title={<>The Year of the Fire Goat <span className="quiz-char text-gold" lang="zh">羊</span></>}>
         <p className="text-[17px] leading-relaxed text-ink">{goatYear}</p>
-        <div className="mt-5 rounded-2xl bg-cream px-5 py-5">
-          {owner?.preordered ? (
-            <p className="font-medium text-ink">Your 2027 Goat-year kit is pre-ordered. It arrives by email by Dec 20.</p>
-          ) : (
-            <>
-              <p className="font-heading text-lg font-bold">The 2027 Goat-year kit</p>
-              <p className="mt-1 text-sm text-gray">
-                Digital download: a 2027 planner, your animal&rsquo;s lucky months, colors and characters, and printable art.
-              </p>
-              {/* Kit-only checkout is wired in Task 6. */}
-              <button disabled className="mt-4 w-full rounded-2xl bg-ink px-6 py-4 font-medium text-paper disabled:cursor-not-allowed">
-                Pre-order — $12
-              </button>
-            </>
-          )}
-        </div>
+        {mode.kind !== "shared" && (
+          <div className="mt-5 rounded-2xl bg-cream px-5 py-5">
+            {owner?.preordered ? (
+              <p className="font-medium text-ink">Your 2027 Goat-year kit is pre-ordered. It arrives by email by Dec 20.</p>
+            ) : (
+              <>
+                <p className="font-heading text-lg font-bold">The 2027 Goat-year kit</p>
+                <p className="mt-1 text-sm text-gray">
+                  Digital download: a 2027 planner, your animal&rsquo;s lucky months, colors and characters, and printable art.
+                </p>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  {[1, 2, 3].map((p) => (
+                    // eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image
+                    <img
+                      key={p}
+                      src={`/api/character/kit-preview?animal=${animal.animal}&p=${p}`}
+                      alt={["Planner cover", "January planner page", "Printable art"][p - 1]}
+                      loading="lazy"
+                      className="aspect-[620/877] w-full rounded-lg bg-white shadow-md shadow-black/10"
+                    />
+                  ))}
+                </div>
+                <p className="mt-2 text-center text-[11px] uppercase tracking-[0.18em] text-gray/80">Preview</p>
+                {/* Kit-only checkout is wired in Task 6. */}
+                <button disabled className="mt-4 w-full rounded-2xl bg-ink px-6 py-4 font-medium text-paper disabled:cursor-not-allowed">
+                  Pre-order — $12
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </Section>
 
       {owner && (
-        <Section eyebrow="Wallpapers" title="Keep it on your lock screen">
+        <Section id="wallpapers" eyebrow="Wallpapers" title="Keep it on your lock screen">
           <div className="grid grid-cols-3 gap-3">
             {[1, 2, 3].map((v) => (
               <a key={v} href={`/api/character/wallpaper?${owner.wallpaperQuery}&v=${v}`} download className="group block">
@@ -189,8 +239,8 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
       )}
 
       {owner ? (
-        <Reveal className="mt-16">
-          <section className="rounded-3xl border border-gray-light/60 bg-white px-6 py-8 text-center shadow-lg shadow-black/5">
+        <Reveal className="mt-12">
+          <section className="text-center">
             <h2 className="font-heading text-2xl font-bold">Share your reading</h2>
             <p className="mt-2 text-gray">Save your card or send your whole reading.</p>
             {/* eslint-disable-next-line @next/next/no-img-element -- dynamic next/og image */}
@@ -221,7 +271,7 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
           </section>
         </Reveal>
       ) : (
-        <section className="mt-16 rounded-3xl bg-ink px-5 py-8 text-center text-paper">
+        <section className="mt-12 rounded-3xl bg-ink px-5 py-8 text-center text-paper">
           <h2 className="font-heading text-2xl font-bold">
             {mode.kind === "example" ? "Get your own reading" : "What’s your Chinese character?"}
           </h2>
@@ -235,7 +285,7 @@ export function ReadingView({ view, mode, reflection }: { view: ResultView; mode
         </section>
       )}
 
-      <p className="mt-10 text-center text-[11px] leading-relaxed text-gray/80">
+      <p className="mt-12 text-center text-[11px] leading-relaxed text-gray/80">
         Your animal and element come from the Chinese zodiac for your birth year. Your character is matched to your answers.{" "}
         <Link href="/character" className="underline hover:text-ink">Take the quiz again</Link>
       </p>

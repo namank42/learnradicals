@@ -20,6 +20,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "You don't have to hold the blade all day. Set it down for an hour. You'll still be strong when you pick it back up.",
+    love: `In love, you're the steady one. You show up, you remember, you stay when things get hard. The people you let close feel safe because your heart doesn't wobble. But you can hold the blade so quietly that nobody knows it's there, not even the person beside you. You give endless patience and expect to need none back. What you need is someone who asks twice, who notices when "I'm fine" is just a habit. Watch for loving people by enduring them. Say one heavy thing out loud this week. Letting someone help carry it is also a kind of trust.`,
+    money: `At work, you're the one who finishes. Deadlines bend around you, and people learn they can count on you, sometimes too much. Your endurance is valuable, which is exactly why it gets taken for free. The extra hour becomes the expected hour. The favor becomes the job. You tend to price yourself by how much you can bear, not by what you deliver. With spending, you're careful and quietly generous, often to others before yourself. One reflection: list what you carry that nobody pays you for. Then choose one piece to set down, or to name out loud.`,
     pairsWith: "healing",
   },
   {
@@ -41,6 +43,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "Sinking a little today doesn't undo the floating. Lie back. Let the water hold you. You know how to do this.",
+    love: `You love like someone who knows what it costs to be hurt. You're gentle with the people you let close. You never rush their tears or their trust. Your own trust floats back slowly, and that's okay. What you need is someone who doesn't treat your past like a problem to fix, who lets you drift toward them at your own pace. Watch for one pattern: becoming everyone's safe harbor while keeping your own heart half out of the water. Let one person see you mid-mend, not only after. Being loved while you're still healing is part of the healing.`,
+    money: `With money and work, you're thoughtful and kind, sometimes too kind. You're the colleague who covers a shift for someone having a hard week, the friend who quietly picks up the bill. People trust you, and that trust is worth something real. The pattern to watch: you may undercharge for the care you bring, as if softness weren't a skill. You may also treat your own rest as an expense instead of a need. One reflection: what would it look like to value your calm presence the way your clients, your team, or your friends already do?`,
     pairsWith: "rest",
   },
   {
@@ -62,6 +66,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "Even on gray days, you can still taste something. Take one slow sip of water. You're here. That's the whole point.",
+    love: `You love out loud. The people you let close get surprise snacks, spontaneous plans, and your full attention when you're together. You make ordinary evenings feel like a small festival. What you need back is someone who can keep up sometimes and slow you down other times, who loves the quiet version of you as much as the bright one. Watch for one pattern: drifting when the newness fades, mistaking calm for boredom. Deep water tastes different, not worse. Next time a connection feels still, stay one sip longer. Steady can be its own kind of alive.`,
+    money: `You do your best work when the work feels alive. Give you variety, people, and a little adventure, and you shine. Give you a gray routine and your spark dims. You spend on experiences more than things: the trip, the long dinner, the concert you still talk about. That's not careless. It's how you stay awake. The pattern to watch: buying a quick taste of joy on a tired day, then wondering where it went. Your energy is a resource too, and you tend to hand it out free. One reflection: which purchases still taste good a month later? Spend more there.`,
     pairsWith: "joy",
   },
   {
@@ -83,6 +89,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "Brave today might just mean taking the next step. One foot, then the other. The path is narrow, not endless.",
+    love: `In love, you're often the one brave enough to say it first. You name the hard thing, you apologize properly, you stay in the conversation when it gets narrow. The people you let close feel protected by you. What you need back is someone who doesn't make you fight for softness, who meets you halfway on the path instead of watching from the wide road. Watch for one pattern: choosing people who need rescuing, because difficulty feels familiar. Love doesn't have to be a test of strength. Let someone be brave for you once. Receiving takes courage too.`,
+    money: `You're bold where others hesitate. You ask the question in the meeting, change direction when something isn't right, start the side project, negotiate even when your voice shakes. The pattern to watch: picking the hardest route because it feels more honest, even when an easier one is just as good. You may also refuse help with work or money out of pride, carrying every risk alone. Your time is worth what you'd tell a friend to charge. One reflection: where are you walking the narrow path only out of habit? Some roads can be wide and still be yours.`,
     pairsWith: "endurance",
   },
   {
@@ -104,6 +112,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "Your heart doesn't have to be tidy today. Let the mess sit. You can sweep tomorrow. Clarity always comes back to you.",
+    love: `You love with clear eyes. You see the people you let close as they really are, and you love them anyway. That's a rare gift. You're the calm in their storms, the one who knows what to say. What you need back is someone who doesn't only come to you for answers, who asks how you are and waits for the real reply. Watch for one pattern: understanding your feelings instead of feeling them, keeping love tidy and a little at arm's length. Let someone see you confused. A heart that's swept clean still has room for company.`,
+    money: `At work, you're the one who sees the pattern first. You spot the problem before it grows, and you explain it so others can act. People quietly rely on your judgment. The pattern to watch: you give that clarity away in hallway chats and late-night calls, then wonder why your title or pay doesn't match your influence. With spending, you're measured and rarely impulsive, sometimes to the point of denying yourself simple pleasures. One reflection: which advice do you give for free that others would gladly pay for? Clarity is work. It deserves to be counted.`,
     pairsWith: "feeling",
   },
   {
@@ -125,6 +135,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "Leave the field for tonight. The rows will still be there in the morning, and so will you.",
+    love: `You love in details. You remember the coffee order, the name of a childhood pet, the thing someone mentioned once in passing. The people you let close feel deeply considered, because they are. What you need back is someone patient with your pauses, who lets you think out loud without rushing you to the ending. Watch for one pattern: replaying a small moment until it grows into a big worry, or answering a feeling with an analysis. When your mind starts plowing at night, ask instead of guessing. Most fields look smaller in the morning.`,
+    money: `You work like a careful farmer. You research, plan, and prepare, and your work holds up because you've thought it through. People bring you the complicated problems. The pattern to watch: your best work happens in your head, where nobody sees it, so it rarely gets counted or paid. You may also overthink spending, circling one small purchase for weeks while bigger choices wait. One reflection: write down the thinking you did this week that nobody asked for. Some of it is a gift. Some of it is work that deserves a name, a fee, or a boundary.`,
     pairsWith: "feeling",
   },
   {
@@ -146,6 +158,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "It's okay if everything tastes like salt today. Feel it, then rinse. Your heart is seasoned, not ruined.",
+    love: `You love with your whole heart, and people feel it. The people you let close know they matter, because you notice everything: a tired voice, a bit of good news, a quiet day. You remember how moments felt, not only what happened. What you need back is someone who never calls your depth too much, who stays steady when your feelings run high. Watch for one pattern: absorbing their moods until you lose track of your own. Before you soothe someone else, check in with yourself. Your heart deserves the same tenderness you give away so easily.`,
+    money: `You work best where your heart is involved. You read a room, sense what a client or teammate needs, and quietly smooth things over. That emotional skill is real work, even when no job description lists it. The pattern to watch: money choices made in a mood, like comfort spending on salty days, or guilt about asking for what your work is worth. You may offer discounts because you can feel the other person's stretch. One reflection: notice how you feel before you spend or name a price. Let the feeling inform you, then let a calmer moment decide.`,
     pairsWith: "thinking",
   },
   {
@@ -167,6 +181,8 @@ export const STRENGTH: CharacterEntry[] = [
     ],
     hardDays:
       "You don't need to understand today. Some days the heart is still walking toward you. Let it take its time.",
+    love: `You love people as they grow. You're the one who notices how someone has changed and means it as a compliment. The people you let close feel free to evolve, because you never hold their past against them. What you need back is the same grace: room to keep becoming, without explaining every new layer. Watch for one pattern: waiting until you've fully figured yourself out before letting anyone all the way in. You don't need to be finished to be loved. Share a realization while it's still fresh, before it's polished. That's where closeness lives.`,
+    money: `Your relationship with money and work grows in layers. One day something clicks, like what you actually enjoy or what your time is really worth, and you adjust. That's your gift: you keep learning instead of repeating. The pattern to watch: waiting for perfect clarity before you ask for more, change direction, or start the thing. You may also judge past choices too harshly, but that self was doing the best it knew. One reflection: what have you already realized about your work that you haven't acted on yet? Small steps count as awakening too.`,
     pairsWith: "wisdom",
   },
 ];

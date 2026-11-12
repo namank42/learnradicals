@@ -19,6 +19,8 @@ export type CharacterEntry = {
   about: string; // paid, 150–250 words, second person
   words: { hanzi: string; pinyin: string; en: string }[]; // exactly 3, each contains `char`
   hardDays: string; // paid, ≤ 140 chars
+  love: string; // paid, 60–110 words: how this character loves and connects (works single or partnered)
+  money: string; // paid, 60–110 words: how this character relates to money and work (reflective, never predictive)
   pairsWith: string; // slug of another entry
 };
 
