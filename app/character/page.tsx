@@ -7,6 +7,18 @@ export const metadata: Metadata = {
   description:
     "Four quick taps and your birthday. Find the Chinese character that reads like you, plus your zodiac animal and year element.",
   alternates: { canonical: "/character" },
+  openGraph: {
+    title: "What's your Chinese character?",
+    description: "Find the Chinese character that reads like you, plus your zodiac animal and year element. Free, under a minute.",
+    url: "/character",
+    images: [{ url: "/og-character.png", width: 1200, height: 630, alt: "Chinese character quiz" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "What's your Chinese character?",
+    description: "Find the Chinese character that reads like you, plus your zodiac animal and year element.",
+    images: ["/og-character.png"],
+  },
 };
 
 export default function CharacterQuizPage() {
