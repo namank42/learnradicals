@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { getResult } from "@/lib/character";
 import { getReadingAccess } from "@/lib/character/access";
 import { buildKitPdf } from "@/lib/character/kit-pdf";
+import { serverTrack } from "@/lib/character/analytics";
 
 export const maxDuration = 60;
 
@@ -17,6 +18,7 @@ export async function GET(req: NextRequest) {
   if (!access || !access.hasKit || !view) return Response.json({ error: "Kit not purchased" }, { status: 403 });
 
   const pdf = await buildKitPdf(view.animal);
+  await serverTrack("download_kit", { animal: view.animal.animal }, req);
   return new Response(Buffer.from(pdf), {
     headers: {
       "Content-Type": "application/pdf",

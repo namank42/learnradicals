@@ -41,13 +41,17 @@ export function Quiz() {
       return setBirthError("That date doesn't exist. Check the day.");
     }
     setBirthError("");
+    track("quiz_birthday");
     setStep(0);
   }
 
   function answer(qi: number, ai: number) {
     const next = [...answers.slice(0, qi), ai];
     setAnswers(next);
-    if (qi + 1 < QUESTIONS.length) return setStep(qi + 1);
+    if (qi + 1 < QUESTIONS.length) {
+      track(`quiz_q${qi + 1}`);
+      return setStep(qi + 1);
+    }
 
     const b: Birth = { y: Number(birth.y), m: Number(birth.m), d: Number(birth.d) };
     const { animal, element } = getZodiac(b.y, b.m, b.d);

@@ -3,6 +3,7 @@ import { getResult } from "@/lib/character";
 import { getReadingAccess } from "@/lib/character/access";
 import { buildReadingPdf, readingPageImage } from "@/lib/character/reading-pdf";
 import { buildReflection } from "@/lib/character/reflection";
+import { serverTrack } from "@/lib/character/analytics";
 
 export const maxDuration = 60;
 
@@ -24,6 +25,7 @@ export async function GET(req: NextRequest) {
   }
 
   const pdf = await buildReadingPdf(view, reflection);
+  await serverTrack("download_reading_pdf", { id: view.id }, req);
   return new Response(Buffer.from(pdf), {
     headers: {
       "Content-Type": "application/pdf",

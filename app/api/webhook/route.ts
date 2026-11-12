@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { sendReadingEmail } from "@/lib/email/reading-email";
 import { getResult } from "@/lib/character";
 import { saveBuyerContact } from "@/lib/character/email-capture";
+import { serverTrack } from "@/lib/character/analytics";
 
 async function sendDownloadEmail(email: string, sessionId: string) {
   const resend = new Resend(process.env.RESEND_API_KEY!);
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
           await sendReadingEmail(session.customer_details.email, session.id, session.metadata.result_id);
           const view = getResult(session.metadata.result_id);
           if (view) await saveBuyerContact(session.customer_details.email, view);
+          await serverTrack("reading_purchase", { id: session.metadata.result_id });
         } else {
           await sendDownloadEmail(session.customer_details.email, session.id);
         }
