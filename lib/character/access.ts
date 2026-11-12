@@ -8,11 +8,14 @@ export type ReadingAccess = {
   answers: number[] | null;
   /** Bought the 2027 Goat-year kit with this checkout. */
   hasKit: boolean;
+  /** e.g. "Visa ···· 4242" — the card saved at checkout, shown before a one-tap charge. */
+  savedCard?: string | null;
   sessionId: string | null;
   example?: boolean;
 };
 
 const isDev = () => process.env.NODE_ENV !== "production";
+const cap = (s: string) => (s === "amex" ? "Amex" : s.charAt(0).toUpperCase() + s.slice(1));
 
 /**
  * Who may see a full reading (and its wallpapers):
@@ -33,7 +36,7 @@ export async function getReadingAccess(opts: {
   if (opts.sessionId) {
     try {
       const s = stripe();
-      const session = await s.checkout.sessions.retrieve(opts.sessionId, { expand: ["payment_intent"] });
+      const session = await s.checkout.sessions.retrieve(opts.sessionId, { expand: ["payment_intent.payment_method"] });
       const resultId = session.metadata?.result_id ?? "";
       if (session.payment_status !== "paid" || session.metadata?.product !== "reading") return null;
       if (!decodeResultId(resultId)) return null;
@@ -41,7 +44,9 @@ export async function getReadingAccess(opts: {
       let hasKit = false;
       const kitPi = pi && typeof pi !== "string" ? pi.metadata?.kit_pi : undefined;
       if (kitPi) hasKit = (await s.paymentIntents.retrieve(kitPi)).status === "succeeded";
-      return { resultId, answers: parseAnswers(session.metadata?.answers), hasKit, sessionId: session.id };
+      const pm = pi && typeof pi !== "string" && pi.payment_method && typeof pi.payment_method !== "string" ? pi.payment_method : null;
+      const savedCard = pm?.card ? `${cap(pm.card.brand)} ···· ${pm.card.last4}` : pm ? cap(pm.type.replace(/_/g, " ")) : null;
+      return { resultId, answers: parseAnswers(session.metadata?.answers), hasKit, sessionId: session.id, savedCard };
     } catch {
       return null;
     }

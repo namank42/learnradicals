@@ -80,6 +80,9 @@ export async function buyKit(sessionId: string): Promise<KitPurchaseResult> {
         confirm: true,
         description: "2027 Year of the Goat kit",
         metadata: { product: "kit", reading_session: session.id, result_id: session.metadata?.result_id ?? "" },
+        // use_stripe_sdk lets stripe.handleNextAction show the bank check in place instead of redirecting;
+        // return_url stays as the fallback for payment methods that must redirect.
+        use_stripe_sdk: true,
         return_url: `${BASE_URL}/character/reading?session_id=${session.id}`,
       },
       { idempotencyKey: `kit-${session.id}-${Math.floor(Date.now() / 15000)}` },

@@ -77,7 +77,7 @@ function KitPreviews({ animal }: { animal: string }) {
 }
 
 export type ReadingMode =
-  | { kind: "owner"; wallpaperQuery: string; hasKit: boolean; shareUrl: string; sessionId: string | null }
+  | { kind: "owner"; wallpaperQuery: string; hasKit: boolean; shareUrl: string; sessionId: string | null; savedCard: string | null }
   | { kind: "example"; backTo: { id: string; char: string } | null; readingPrice: string }
   | { kind: "shared" };
 
@@ -255,7 +255,7 @@ export function ReadingView({
                   matches, 12 months with a character for each, and 6 printable art pieces.
                 </p>
                 <KitPreviews animal={animal.animal} />
-                <KitUpsellButton sessionId={owner.sessionId} priceLabel={kitPrice} />
+                <KitUpsellButton sessionId={owner.sessionId} priceLabel={kitPrice} savedCard={owner.savedCard} />
               </>
             )}
           </div>

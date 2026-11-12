@@ -23,6 +23,7 @@ export async function OwnerReading({ access }: { access: ReadingAccess }) {
           wallpaperQuery: accessQuery(access),
           hasKit: access.hasKit,
           sessionId: access.sessionId,
+          savedCard: access.savedCard ?? null,
           shareUrl: `${BASE}/character/s/${signReading(access.resultId, access.answers)}`,
         }}
       />
