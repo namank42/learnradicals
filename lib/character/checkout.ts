@@ -5,7 +5,7 @@ import { BASE_URL, stripe } from "./stripe-server";
 export type Region = "std" | "sea";
 
 export const SAVE_CARD_NOTE =
-  "We'll save your payment details so you can add extras to your reading in one tap.";
+  "We'll save your payment details so you can add extras in one tap, and email your reading plus occasional Chinese character notes. Unsubscribe anytime.";
 
 /** Embedded Checkout session for a reading. The card is saved (on-session) for the one-tap kit upsell. */
 export async function createReadingCheckout(opts: {

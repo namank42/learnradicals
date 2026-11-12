@@ -6,6 +6,7 @@ import { getResult } from "@/lib/character";
 import { displayPrices } from "@/lib/character/pricing";
 import { ShareButton } from "../../share-button";
 import { UnlockSheet } from "./unlock-sheet";
+import { EmailCapture } from "./email-capture";
 import "../../character.css";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ a?: string }> };
@@ -71,8 +72,9 @@ export default async function ResultPage({ params, searchParams }: Props) {
           See an example reading &rarr;
         </Link>
 
-        <div className="mt-6">
+        <div className="mt-6 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <ShareButton id={id} char={c.char} decode={c.decode} variant="link" />
+          <EmailCapture id={id} />
         </div>
 
         <p className="mx-auto mt-6 max-w-xs text-balance text-[11px] leading-relaxed text-gray/80">

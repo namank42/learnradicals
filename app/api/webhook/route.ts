@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { sendReadingEmail } from "@/lib/email/reading-email";
+import { getResult } from "@/lib/character";
+import { saveBuyerContact } from "@/lib/character/email-capture";
 
 async function sendDownloadEmail(email: string, sessionId: string) {
   const resend = new Resend(process.env.RESEND_API_KEY!);
@@ -56,6 +58,8 @@ export async function POST(request: Request) {
       try {
         if (session.metadata?.product === "reading" && session.metadata.result_id) {
           await sendReadingEmail(session.customer_details.email, session.id, session.metadata.result_id);
+          const view = getResult(session.metadata.result_id);
+          if (view) await saveBuyerContact(session.customer_details.email, view);
         } else {
           await sendDownloadEmail(session.customer_details.email, session.id);
         }

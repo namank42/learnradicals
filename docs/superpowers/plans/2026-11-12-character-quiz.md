@@ -405,6 +405,7 @@ export function ResultCard(props: { view: ResultView; format: "og" | "story" | "
   - Goat-year kit add-on, $5 USD (`STRIPE_PRICE_GOAT_KIT_STD`) and $3 USD (`STRIPE_PRICE_GOAT_KIT_SEA`), digital download.
 - [ ] **User:** create the Resend segment "Character quiz".
 - [ ] **User:** add `STRIPE_PRICE_READING_STD`, `STRIPE_PRICE_READING_SEA`, `STRIPE_PRICE_GOAT_KIT_STD` and `RESEND_SEGMENT_QUIZ` to Vercel production env.
+- [ ] Run `node --env-file=.env.local scripts/resend-setup.mjs` once (creates the "Character quiz" and "Character buyers" lists and 4 contact fields), then set `RESEND_SEGMENT_QUIZ` and `RESEND_SEGMENT_BUYERS` in Vercel.
 - [ ] **User:** set `READING_SHARE_SECRET` in Vercel production (a long random string). Shared reading links stop verifying if it changes.
 - [ ] **Launch gate:** a fluent Chinese reader reviews `lib/character/content/characters.ts` (chars, pinyin, the 3 words, no mistranslations). Changes go back through `pnpm test`.
 - [ ] Merge `feat/character-quiz` (with the user's OK), deploy, and do one live purchase plus a refund.
