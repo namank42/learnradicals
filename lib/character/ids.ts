@@ -1,12 +1,7 @@
 import { CHARACTERS_BY_SLUG } from "./content/characters";
 import { ANIMALS, ELEMENTS, type Animal, type Element } from "./types";
 
-/** `${slug}-${animal}-${element}`, e.g. "wisdom-rabbit-water". */
-export type ResultId = string;
-
-export function encodeResultId(slug: string, animal: Animal, element: Element): ResultId {
-  return `${slug}-${animal}-${element}`;
-}
+export { encodeResultId, type ResultId } from "./encode";
 
 export function decodeResultId(
   id: string,

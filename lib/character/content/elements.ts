@@ -4,21 +4,21 @@ export const ELEMENT_PROFILES: ElementProfile[] = [
   {
     element: "wood",
     zh: "木",
-    badge: "Growing, generous, always reaching for the light.",
+    badge: "Rooted and rising, reaching for the light.",
     profile:
       "Wood is said to be the element of growth. Tradition pairs it with spring, the color green, and a steady upward reach. Wood in you brings patience with how slowly good things grow, and a gift for helping others grow too. You plan for the long season. You bend in the wind without breaking. When something feels stuck, your instinct is to find the next small branch and keep climbing.",
   },
   {
     element: "fire",
     zh: "火",
-    badge: "Warm, bright, the spark that gets everyone moving.",
+    badge: "The spark that sets a whole room moving.",
     profile:
       "Fire is said to be the element of warmth and light. Tradition pairs it with summer, the color red, and the moment a room comes alive. Fire in you brings passion, charm, and a way of making people feel seen. You start things. You bring the spark when energy runs low. Tradition also says fire burns best with a little air, so your brightest seasons come when you leave space to breathe.",
   },
   {
     element: "earth",
     zh: "土",
-    badge: "Steady, nurturing, the ground people stand on.",
+    badge: "Grounded, nurturing, the floor people stand on.",
     profile:
       "Earth is said to be the element of balance. Tradition places it at the center of the five and pairs it with late summer, the color yellow, and the harvest. Earth in you brings steadiness, patience, and a talent for holding things together. People feel calmer near you. You remember the details that make others feel cared for. Your gift is staying power, the quiet kind that keeps a whole season growing.",
   },

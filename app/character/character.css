@@ -1,0 +1,13 @@
+/* Subset of Noto Serif SC Bold covering only the quiz's characters (scripts/subset-fonts.py). */
+@font-face {
+  font-family: "Quiz Serif";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/quiz-serif.woff2") format("woff2");
+}
+
+.quiz-char {
+  font-family: "Quiz Serif", var(--font-cjk);
+  font-weight: 700;
+}
